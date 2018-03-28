@@ -1,0 +1,53 @@
+gitPagina para descargar la consola
+https://git-scm.com/
+en la instalacion se selecciona : Use Git and optional Unix...
+
+Comandos Basicos de consola
+---------------------------
+pwd
+cd carpeta
+cd /unidad
+git init 
+git add <file>
+git status
+git log
+git commit
+git push
+git pull
+git clone
+git diff
+git branch
+git checkout
+.gitignore : lista de archivos y carpetas a ignorar
+git add . : Agrega todos los archivos
+git remote remove origin
+git remote -v 
+git remote add origin https://github.com/torondoyweb/carritodecompras.git : repositorio en la web
+git push -u origin master : empujar al repositorio
+git clone https://github.com/torondoyweb/carritodecompras.git : para descargar el proyecto
+git pull origin master : traer cambios desde la web
+
+El editor por defecto es VI para insertar salir guardando
+---------------------------------------------------------
+I "escreibir el texto" ESC :wq
+
+Comando la consola para configurar por primera vez
+--------------------------------------------------
+git config --global user.email "correo"
+git config --global user.name "nombre"
+
+Trabajar con un Proyecto
+-------------------------------------------------------------------------
+git init : se ejecuta dentro de la carpeta del proyecto solo por primera vez
+git checkout -- archivo.ext : retorna valores anteriores como un undo
+git checkout rama : cambia una rama a otra
+git diff archivo.ext : muestra la diferencias del archivo anterior con los cambios del archivo
+
+Ejemplo
+------------------------------------------------------------------------
+echo "# carritodecompras" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git remote add origin git@github.com:torondoyweb/carritodecompras.git
+git push -u origin master
