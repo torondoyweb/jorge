@@ -192,5 +192,26 @@ router.post('/grabarimagen', function (req, res) {
         }
     })
 })
+router.get('/basededatos', function (req, res) {
+    var mS = "show tables from jorge"
+    var conn = mysql.createConnection( xbase.db )
+    conn.connect()
+    conn.query(mS,function (error, results, fields) {
+        if ( error ) {
+            res.send("error")
+        }
+        if (!error){
+            infcarritoyusuario.inflogin(req,function( minflogin,minfcarrito ){
+                res.status(200).render('administracion/basededatos',{ 
+                      xinflogin:minflogin,
+                      xinfcarrito:minfcarrito,
+                      xbasededatos: xbase.db.database,
+                      xlisttablas: JSON.stringify( results )
+                })
+            })
+        }
+    })
+    conn.end()  
+})
 
 module.exports = router
