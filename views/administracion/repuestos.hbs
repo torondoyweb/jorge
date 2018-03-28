@@ -1,0 +1,478 @@
+<style type="text/css">
+    #mibrand {  font-size: 20px; color: #4B0082;}
+    #nombrecategoria { color: #800080; font-size: 20px;}
+
+    .navbar.navbarRepuestos {
+        background-color: #99ccff;
+        border: 0;
+        -webkit-box-shadow: none;
+        box-shadow: none;
+    }
+
+    #combobox a:hover{
+        color: #8B008B;
+        background: #E6E6FA;
+        display:block;
+        text-decoration:none;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    }
+    .monto { text-align: right; }
+</style>
+<!-- Inicio Style del Modal Repuesto Nuevo-->
+<style type="text/css">
+    #repMsg{
+        display: none;
+    }
+    #idCategoria{
+        display: none;
+    }
+    .vertical-center {
+        max-width: 100%;
+        display: inline-block;
+        vertical-align: middle;
+        font: 22px/1 "Helvetica Neue", Helvetica, Arial, sans-serif; 
+        color: #6B8E23;
+    }
+    .checkdisp{
+        max-width: 100%;
+        display: inline-block;
+        vertical-align: middle;
+        font: 22px/1 "Helvetica Neue", Helvetica, Arial, sans-serif; 
+    }
+</style>
+<!-- Fin Style del Modal Repuesto Nuevo-->
+
+<div class="container">
+    <!-- *** Variables -->
+        <p id="idCatPrincipal" style="display:none"></p> <!-- La categoria Principal -->
+        <p id="orden" style="display:none"></p> <!-- Orden Repuestos -->
+        <p id="IdNuevoUsado" style="display:none"></p> <!-- Id Nuevo o Usado -->
+    <!-- *** Variables -->
+	<nav class="navbar navbar-default navbarRepuestos">
+	  <div class="container-fluid">
+	    <div class="navbar-header">
+	      <a class="navbar-brand" id="mibrand">Repuestos</a>
+	    </div>
+	    <ul class="nav navbar-nav">
+			<li style="font-size:20px" class="dropdown">
+        		<a style="color:green;" class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    Categorias &#9782;
+    			</a>
+        		<ul class="dropdown-menu">
+                    <li id="combobox"></li>
+        		</ul>
+      		</li>
+            <!--<li class="navbar-text" id="nombrecategoria"></li>-->
+	    </ul>
+		<ul class="nav navbar-nav navbar-right">
+            <li class="navbar-text" id="nombrecategoria"></li>
+            <li><button class="btn btn-default navbar-btn" onclick="app.repOrden('nombre')">
+                <span class="glyphicon glyphicon-sort"></span>
+            </button></li>
+            <li><button class="btn btn-default navbar-btn" onclick="app.repOrden('codigo')">
+                <span class="glyphicon glyphicon-sort-by-order"></span>
+            </button></li>
+    		<li style="padding-right:10px;">
+    			<button class="btn btn-default navbar-btn" onclick="app.repNuevo(0)">
+ 					<span class="glyphicon glyphicon-plus" style="color:green">
+                    Nuevo
+				</button>
+			</li>
+  		</ul>
+	  </div>
+	</nav>
+
+	<table id="table" class="table table-bordered table-hover">
+	    <tr></tr>
+	    <tbody></tbody>
+	</table>
+
+    <!-- Inicio Modal Nuevo Repuesto-->
+    <div class="modal fade" id="modalrepuestoaAregar" role="dialog">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <!-- id="tipoNU" Nuevo Repuesto-->
+              <!--<h4><span class="glyphicon glyphicon-plus" id="tipoNU"></span></h4>-->
+              <span class="glyphicon glyphicon-plus" id="tipoNU"></span>
+            </div>
+            <div class="modal-body" style="padding:10px 25px;">
+
+                <form class="form-horizontal" data-toggle="validator" role="form">
+                    <div class="form-group">
+                        <label class="control-label col-sm-2">Código :</label>
+                        <div class="col-sm-4">
+                          <input type="text" class="form-control" id="repCodigo">
+                        </div>
+                        <div class="col-sm-1">
+                            <p id="idCategoria"></p>
+                        </div>                      
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-2" for="pwd">Nombre :</label>
+                        <div class="col-sm-10">          
+                          <input type="text" class="form-control" id="repNombre">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Descripción</label>
+                        <input type="text" class="form-control" id="repDescripcion">
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="col-sm-3">
+                            <label>Existencia</label>
+                            <input type="text" class="form-control text-center" id="repExi" value="0">
+                        </div>
+                        <div class="col-sm-3">
+                            <label>Precio</label>
+                            <input type="text" class="form-control text-right" id="repPrecio" value="0">
+                        </div>
+                        <div class="col-sm-3 checkdisp">
+                            <div class="checkbox">
+                                <span class="glyphicon glyphicon-pushpin" style="color:blue"></span>
+                                <label><input type="checkbox" id="repDisp"> Disponible</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-3">
+                            <div class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle" id="menu1" type="button" data-toggle="dropdown">Categorias &#9782;
+                                </button>
+                                <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
+                                  <li id="listCat"></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 vertical-center">
+                            <p id="nombreCategoria"></p>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                  <p class="pull-left" id="repMsg">
+                    <span class="glyphicon glyphicon-alert"></span>
+                  </p>
+                <button class="btn btn-success btn-default pull-rigth"  onclick="appNuevoRep.Guardar()">
+                    <span class="glyphicon glyphicon-floppy-disk"></span> Guardar
+                </button>
+                <button class="btn btn-warning btn-default pull-rigth" data-dismiss="modal">
+                    <span class="glyphicon glyphicon-remove"></span> Cancelar
+                </button>
+            </div>
+          </div>
+        </div>
+    </div> 
+    <!-- Fin Modal Nuevo Repuesto-->
+
+    <!-- Inicio Modal Pregunt a-->
+    <div class="modal fade" id="modalPregunta" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h3 class="modal-title">
+                  <i class="glyphicon glyphicon-trash"></i> Eliminar Repuesto
+              </h3>
+          </div>
+          <div class="modal-footer">
+            <p id="idAeliminar" style="display:none"></p>
+            <button type="button" class="btn btn-danger" type="submit" onclick="app.repEliminar()">
+            Si
+            </button>
+            <button type="button" class="btn btn-info" data-dismiss="modal">No</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    <!-- Fin Modal Pregunta -->
+
+    <!-- Inicio Modal Imagenes -->
+    <div class="modal fade" id="modalImagenes" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h3 class="modal-title">
+                  <i class="glyphicon glyphicon-picture" id="nombreImagen"></i> 
+              </h3>
+          </div>
+          <div class="modal-body" align="center">
+            <img id="my_image" src="" class="img-responsive" width="304" height="236"> 
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    <!-- Final Modal Imagenes -->
+
+</div>
+
+<script src="/javascripts/funciones.js"></script>
+
+<script type="text/javascript">
+	var app = new function() {
+        this.repOrden = function(mOrden){
+            document.getElementById("orden").innerHTML = mOrden
+            app.mostrarRepuestos(document.getElementById("idCatPrincipal").innerHTML)
+        }
+        this.repImagen = function(mImagen){
+            document.getElementById("nombreImagen").innerHTML = " " + mImagen + ".jpg"
+            var mImagenScr = "/images/repuestos/" + mImagen + ".jpg"
+            $("#my_image").attr("src",mImagenScr)
+            $("#modalImagenes").modal()
+        }
+        this.repNuevo = function(mID){
+            // Si mID = 0 es Nuevo
+            if ( mID == 0){
+                document.getElementById('repDisp').checked = false
+            }
+            document.getElementById("repMsg").innerHTML = ""
+            document.getElementById('repMsg').style.display = 'none'
+
+            document.getElementById("IdNuevoUsado").innerHTML = mID
+            app.cargarUsado()
+            $("#modalrepuestoaAregar").modal()
+        }
+        this.repPrevioEliminar = function(mID){
+            document.getElementById("idAeliminar").innerHTML = mID
+            $("#modalPregunta").modal()
+        }
+        this.repEliminar = function(){
+            var mID = document.getElementById("idAeliminar").innerHTML
+            var mEnviar = {xid:mID}
+            $.post("/repuestoseliminar",mEnviar,function(data) {
+                app.mostrarRepuestos(document.getElementById("idCatPrincipal").innerHTML)
+                $('#modalPregunta').modal('toggle')
+                document.getElementById("idAeliminar").innerHTML = 0
+            })
+        }
+        this.cargarUsado = function(){
+            var mID = document.getElementById("IdNuevoUsado").innerHTML
+            if ( mID == 0 ){
+                $('#tipoNU').text(' Nuevo')  
+                $('#tipoNU').removeClass('glyphicon glyphicon-pencil').addClass('glyphicon glyphicon-plus')
+                document.getElementById('repCodigo').value = ""
+                document.getElementById('repNombre').value = ""
+                document.getElementById('repDescripcion').value = ""
+                document.getElementById('repExi').value = "0"
+                document.getElementById('repPrecio').value = "0"
+                document.getElementById('repMsg').style.display = 'none'
+                document.getElementById("idCategoria").innerHTML = 0
+                document.getElementById("nombreCategoria").innerHTML = ""
+                document.getElementById("repCodigo").readOnly = false
+            } else {
+                $('#tipoNU').text(' Actualización')  
+                $('#tipoNU').removeClass('glyphicon glyphicon-plus').addClass('glyphicon glyphicon-pencil')
+                $.get("/repuestosunosolo",{xid:mID}, function(data){
+                    document.getElementById('repCodigo').value = data[0].codigo
+                    document.getElementById('repNombre').value = data[0].nombre
+                    document.getElementById('repDescripcion').value = data[0].descripcion
+                    document.getElementById('repExi').value = data[0].existencia
+                    document.getElementById('repPrecio').value = data[0].precio
+                    if (data[0].disponible == "Si") {
+                        document.getElementById('repDisp').checked = true
+                       } else {
+                        document.getElementById('repDisp').checked = false
+                    }
+                    document.getElementById("idCategoria").innerHTML = data[0].idcat
+                    document.getElementById("nombreCategoria").innerHTML = data[0].nombrecat
+                    document.getElementById("repCodigo").readOnly = true
+                })
+            }
+        }
+        this.combocat = function(){
+            $.get("/categoriaslist", function(data){
+                var mJason = "{id:0,nom:'Todos'}"
+                var mS = '<li><a href="#" onclick="app.selcat('+ mJason +')">Todos</a></li>'
+                var mLi=document.createElement('combobox')
+                mLi.id = 0
+                mLi.className = 'list-group-item'
+                mLi.innerHTML = mS
+                document.getElementById("combobox").appendChild(mLi)
+
+                var mLista = data
+                $.each(mLista, function(index, element) { 
+                    mJason = "{id:"+element.id+",nom:'"+element.nombre+"'}"
+                    mLi=document.createElement('combobox')
+                    mS = '<li><a href="#" onclick="app.selcat('+ mJason +')">' + element.nombre + '</a></li>'
+                    mLi.id = element.id
+                    mLi.className = 'list-group-item'
+                    mLi.innerHTML = mS
+                    document.getElementById("combobox").appendChild(mLi)
+                })
+            })
+        }
+        this.selcat = function(item){
+            document.getElementById("idCatPrincipal").innerHTML = item.id
+            document.getElementById("nombrecategoria").innerHTML = item.nom
+            app.mostrarRepuestos(item.id)
+        }
+        this.mostrarRepuestos = function(mId) {
+            var tb = document.getElementById('table')
+            while(tb.rows.length > 1) {
+              tb.deleteRow(1)
+            }
+            var mOrden = document.getElementById("orden").innerHTML
+            $.get("/repuestoslist",{xidcat:mId,xorden:mOrden}, function(data){
+                var mImg = ''
+                var mD = ''
+                var mS = ''
+                var mLista = data
+                $.each(mLista, function(index, element) { 
+
+                	if ( element.disponible == 'Si') {
+                		mD = ''
+						mD += '<td>'
+						mD += '<span class="glyphicon glyphicon-pushpin" style="color:green"></span>'
+						mD += '</td>'
+					} else {
+						mD = '<td></td>'
+                	}
+                    mImg = '<td></td>'
+                    if ( element.imagen != "" && typeof element.imagen != 'undefined') {
+                        // No envio el element.imagen porque me da un error por eso encio el codigo
+                        mImg = ''
+                        mImg += '<td><button class="btn btn-primary" '
+                        mImg += 'onclick="app.repImagen(' + element.codigo + ')">'
+                        mImg += '<span class="glyphicon glyphicon-picture"></span>'  
+                        mImg += '</button></td>'
+                    }
+                    mS = ''
+                    mS += '<tr>'
+                    mS += '<td>' + element.codigo + '</td>'
+                    mS += mImg
+                    mS += '<td>' + element.nombre + '</td>'
+                    mS += '<td>' + element.descripcion + '</td>'
+                    mS += mD
+                    mS += '<td>' + element.existencia + '</td>'
+                    mS += '<td class="monto">' + formatN(element.precio) + '</td>'
+                    mS += '<td >'
+                    mS += '<button class="btn btn-info" onclick="app.repNuevo(' + element.id + ')">'
+                    mS += '<span class="glyphicon glyphicon-pencil"></span></button>   '
+                    mS += '<button class="btn btn-danger" onclick="app.repPrevioEliminar(' + element.id + ')">'
+                    mS += '<span class="glyphicon glyphicon-trash"></span></button>'
+                    mS += "</td>"
+                    mS += '</tr>'
+                    $('#table tr:last').after( mS )
+                })
+            })  
+        }
+    }
+
+    document.getElementById("orden").innerHTML = "nombre"
+    document.getElementById("IdNuevoUsado").innerHTML = 0
+    app.combocat()
+    app.mostrarRepuestos(0)
+    document.getElementById("idCatPrincipal").innerHTML = 0
+    document.getElementById("nombrecategoria").innerHTML = "Todos"
+</script>
+
+<!-- Inicio Script de Nuevo Repuesto -->
+<script>
+    $(function(){
+        $("#repCodigo").focus(function(){ $("#repMsg").hide() })
+        $("#repNombre").focus(function(){ $("#repMsg").hide() })
+        $("#repDescripcion").focus(function(){ $("#repMsg").hide() })
+        $("#repExi").focus(function(){ $("#repMsg").hide() })
+        $("#repPrecio").focus(function(){ $("#repMsg").hide() })
+        $("#menu1").focus(function(){ $("#repMsg").hide() })
+    })
+    var appNuevoRep = new function() {
+        this.llenarCat = function(){
+            $.get("/categoriaslist", function(data){
+                var mS = ""
+                var mJason = ""
+                var mLista = data
+                $.each(mLista, function(index, element) { 
+                    mLi=document.createElement('listCat')
+                    mJason = "{id:"+element.id+",nom:'"+element.nombre+"'}"
+                    mS = ''
+                    mS += '<li role="presentation">'
+                    mS += '<a role="menuitem" tabindex="-1" href="#"'
+                    mS += ' onclick="appNuevoRep.seleCategoria('+ mJason +')">'
+                    mS += element.nombre
+                    mS += '</a></li>'
+                    mLi.innerHTML = mS
+                    document.getElementById("listCat").appendChild(mLi)
+                })
+            })
+        }
+        this.seleCategoria = function(item){
+            document.getElementById("nombreCategoria").innerHTML = item.nom
+            document.getElementById("idCategoria").innerHTML = item.id
+        }
+        this.Guardar = function(){
+            var mCodigo = document.getElementById('repCodigo').value
+            var mNombre = document.getElementById('repNombre').value
+            var mDescri = document.getElementById('repDescripcion').value
+            var mExi = document.getElementById('repExi').value
+            var mPrecio = document.getElementById('repPrecio').value
+            var mDisp = document.getElementById('repDisp').checked
+            var mIdCat = document.getElementById("idCategoria").innerHTML
+
+            if ( !mCodigo || !mNombre || !mDescri || !mExi || !mPrecio || !mIdCat){
+                document.getElementById("repMsg").innerHTML = "Datos Imcorrectos"
+                document.getElementById('repMsg').style.color = "red"
+                document.getElementById('repMsg').style.display = 'block'
+                return
+            }
+            if (!isNumber(mExi)){
+              mExi=0
+            }
+            if (!isNumber(mPrecio)){
+              mPrecio=0
+            }
+            var mDisponible="No"
+            if(mDisp) { mDisponible="Si" }
+
+            if (!isNumber(mIdCat)){
+              return
+            }
+            if (mIdCat == 0 ){
+                return
+            }
+
+            var mID = document.getElementById("IdNuevoUsado").innerHTML
+            var mEnviar = { xcod:mCodigo, xnom:mNombre, xdes:mDescri, xexi:mExi,
+                          xprecio:mPrecio,xdisp:mDisponible,xidcat:mIdCat,xid:mID }
+            $.post("/repuestosgrabarnuevo",mEnviar,function(data) {
+                if (data == "Guardado") {
+                    document.getElementById('repCodigo').value = ""
+                    document.getElementById('repNombre').value = ""
+                    document.getElementById('repDescripcion').value = ""
+                    document.getElementById('repExi').value = "0"
+                    document.getElementById('repPrecio').value = "0"
+
+                    document.getElementById("repMsg").innerHTML = "Datos Guardado"
+                    document.getElementById('repMsg').style.color = "green"
+                    document.getElementById('repMsg').style.display = 'block'
+                    app.mostrarRepuestos(document.getElementById("idCatPrincipal").innerHTML)
+                }
+                if (data == "1062") {
+                    document.getElementById("repMsg").innerHTML = "Código ya Existe"
+                    document.getElementById('repMsg').style.color = "red"
+                    document.getElementById('repMsg').style.display = 'block'
+                }
+                if (data == "error") {
+                    document.getElementById("repMsg").innerHTML = "No se Pudo Guardar"
+                    document.getElementById('repMsg').style.color = "red"
+                    document.getElementById('repMsg').style.display = 'block'
+                }
+                if ( mID != 0 ) { $('#modalrepuestoaAregar').modal('toggle') }
+            })
+        }
+    }
+    appNuevoRep.llenarCat()
+</script>
+<!-- Fin Script de Nuevo Repuesto -->

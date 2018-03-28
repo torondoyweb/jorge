@@ -1,0 +1,79 @@
+<div class="container">
+	<table id="tableusr" class="table table-bordered table-hover table-striped">
+	    <tr></tr>
+	    <tbody></tbody>
+	</table>
+    <!-- Inicio Modal Pgreunta -->
+    <div class="modal fade" id="eliminarUsr" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h3 class="modal-title">
+              		<p id="idUsrEliminar" style="display:none;"></p>
+                  	<i class="glyphicon glyphicon-trash"></i> Eliminar Usuario ?
+              </h3>
+          </div>
+          <div class="modal-footer">
+          	<div class="loader" id="loader_eliusr" style="display:none;"></div>
+            <button type="button" class="btn btn-danger" data-dismiss="modal" type="submit" onclick="eliminarusrServer()">
+            Si
+            </button>
+            <button type="button" class="btn btn-info" data-dismiss="modal">No</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    <!-- Fin Modal Pregunta -->
+</div>
+
+<script>
+    $(function(){
+      llenarlistaUsr()
+    })
+    function llenarlistaUsr(){
+        var tb = document.getElementById('tableusr')
+        while(tb.rows.length > 1) {
+          tb.deleteRow(1)
+        }
+        $.get("/usrlist",function(data){
+          var mS = ''
+          var mLista = data
+          $.each(mLista, function(index, element) { 
+            mBotones = ''
+            if ( element.tipo == 'usuario' ) {
+                mBotones += '<button class="btn btn-danger" onclick="eliminarUsr('+element.id+')">'
+                mBotones += '<span class="glyphicon glyphicon-trash"></span></button>'
+            } else {
+                mBotones += ''
+            } 
+            mS = ''
+            mS += '<tr>'
+            mS += '<td>' + element.login + '</td>'
+            mS += '<td>' + element.nombres + '</td>'
+            mS += '<td>' + element.tipo + '</td>'
+            mS += '<td>'
+            mS += mBotones
+            mS += "</td>"
+            mS += '</tr>'
+            $('#tableusr tr:last').after( mS )
+          })
+      })
+  }
+  function eliminarUsr(mId){
+    document.getElementById("idUsrEliminar").innerHTML = mId
+    $("#eliminarUsr").modal()
+  }
+  function eliminarusrServer(){
+    document.getElementById('loader_eliusr').style.display = 'block'
+    var mId = document.getElementById("idUsrEliminar").innerHTML
+    var mEnviar = {xid:mId}
+    $.get("/usreliminar",mEnviar, function(data){
+      if (data == "Eliminado") {
+          llenarlistaUsr()
+      }
+    })    
+  }
+</script>

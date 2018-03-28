@@ -1,0 +1,200 @@
+<style>
+</style>
+<div class="container">
+	<div class="btn-group btn-group-justified" style="margin-bottom: 10px;">
+		<p id="mFiltro" style="display:none;"></p>
+		<button class="btn btn-success" onclick="llenarLista('Creado')">Creados</button>
+		<button class="btn btn-success" onclick="llenarLista('Enviado')">Respondido y Enviados</button>
+	</div>
+	<table id="tablemsg" class="table table-bordered table-hover table-striped">
+	    <tr></tr>
+	    <tbody></tbody>
+	</table>
+    <!--  ************************************** Responder Mensage  -->
+    <div class="modal fade" id="modalresponderMSG" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+        	<p id="idmsgrpta" style="display:none;"></p>
+          	<div class="modal-header">
+      			<div class="pull-left">
+            		<span class="glyphicon glyphicon-envelope" id="responrptacorreo" style="padding-left:4px;">
+            		</span>	      			
+     			</div>
+				<div class="pull-right">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+         	</div>
+			<div class="modal-body">
+				<div class="form-group">
+				  	<textarea style="font-size: 25px;" class="form-control" rows="5" id="rptamsg"></textarea>
+				</div>
+			</div>
+	      	<div class="modal-footer">
+	      		<div class="pull-left">
+	      			<div class="loader" id="miloader" style="display:none;"></div>
+	      			<p id="msgservidormsg" style="display:none;">Repuesta</p>
+      			</div>
+				<div class="pull-right">
+		            <button class="btn btn-info btnenviarrpta" onclick="enviarRptaMsg()" id="botonenvgen">
+		            	<span class="glyphicon glyphicon-envelope"></span> Enviar
+		            </button>
+		            <button type="submit" class="btn btn-warning btncancelarrpta" data-dismiss="modal">
+		            	<span class="glyphicon glyphicon-remove"></span> Cancelar
+		            </button>
+				</div>
+          	</div>
+    	</div>
+      </div>
+    </div> 
+    <!--  ********************************************  -->
+
+    <!-- Inicio Modal Pgreunta -->
+    <div class="modal fade" id="eliminarRptaModal" role="dialog">
+      <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h3 class="modal-title">
+              		<p id="idRptaEliminar" style="display:none;"></p>
+                  	<i class="glyphicon glyphicon-trash"></i> Eliminar Mensaje ?
+              </h3>
+          </div>
+          <div class="modal-footer">
+          	<div class="loader" id="loader_Eliminarrpta" style="display:none;"></div>
+            <button type="button" class="btn btn-danger" data-dismiss="modal" type="submit" onclick="eliminarRptadelServer()">
+            Si
+            </button>
+            <button type="button" class="btn btn-info" data-dismiss="modal">No</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    <!-- Fin Modal Pregunta -->
+
+</div>
+
+<script>
+    $(function(){
+		  document.getElementById("mFiltro").innerHTML = 'Creado'
+		  llenarLista('Creado')
+    })
+    function llenarLista(mFiltro){
+        document.getElementById("mFiltro").innerHTML = mFiltro
+		    var tb = document.getElementById('tablemsg')
+        while(tb.rows.length > 1) {
+          tb.deleteRow(1)
+        }
+        var mEnviar = {}
+        if ( mFiltro == 'Creado' ) { mEnviar = {xwhere:"estado='Creado'"} }
+        if ( mFiltro == 'Enviado' ) { mEnviar = {xwhere:"estado='Enviado'"} }
+        $.get("/mensajerialist",mEnviar, function(data){
+        	var mS = ''
+        	var mRepuesta = ''
+        	var mBotones = ''
+        	var mLista = data
+          $.each(mLista, function(index, element) { 
+          	mBotones = ''
+          	if ( element.estado == 'Creado' ) {
+          		mBotones += '<button class="btn btn-info" onclick="responder(' + element.id + ')">'
+            	}
+          	if ( element.estado == 'Enviado' ) {
+          		mBotones += '<button class="btn btn-info disabled" onclick="responder(' + element.id + ')">'
+            	}
+            	mBotones += '<span class="glyphicon glyphicon-envelope"></span></button>   '
+          	  mBotones += '<button class="btn btn-danger" onclick="eliminarRpta(' + element.id + ')">'
+                mBotones += '<span class="glyphicon glyphicon-trash"></span></button>'
+    				if ( typeof element.msgrepuesta != 'string') {
+    					mRepuesta = ''
+    				} else {
+    					mRepuesta = element.msgrepuesta
+    				}
+                mS = ''
+                mS += '<tr>'
+                mS += '<td>' + element.nombres + '</td>'
+                mS += '<td>' + element.fecha + '</td>'
+                mS += '<td>' + element.mensaje + '</td>'
+                mS += '<td>' + element.correo + '</td>'
+                mS += '<td>' + mRepuesta + '</td>'
+                mS += '<td>'
+                mS += mBotones
+                mS += "</td>"
+                mS += '</tr>'
+                $('#tablemsg tr:last').after( mS )
+        	})
+    	})
+	}
+	function responder(mId) {
+		$('.btnenviarrpta').attr("disabled", false)
+		$('.btncancelarrpta').attr("disabled", false)
+        document.getElementById('miloader').style.display = 'none'
+        document.getElementById('msgservidormsg').style.display = 'none'
+    		document.getElementById("idmsgrpta").innerHTML = mId
+    		document.getElementById("responrptacorreo").innerHTML = ''
+    		document.getElementById("rptamsg").value = ''
+    		var mEnviar = {xid:mId}
+        $.get("/mensajeriagetrepuesta",mEnviar, function(data){
+        	if (data == "error") {
+    		}
+        	if (data != "error") {
+				document.getElementById("responrptacorreo").innerHTML = ' ' + data[0].correo
+				document.getElementById("rptamsg").value = ""
+        		if (data[0].msgrepuesta){
+					document.getElementById("rptamsg").value = data[0].msgrepuesta
+    			}
+	 			$("#modalresponderMSG").modal()
+ 			}
+    	})
+	}
+	function enviarRptaMsg() {
+		$('.btnenviarrpta').attr("disabled", true)
+		$('.btncancelarrpta').attr("disabled", true)		
+    document.getElementById('msgservidormsg').style.display = 'none'
+		var mId = document.getElementById("idmsgrpta").innerHTML
+		var mRpta = document.getElementById("rptamsg").value
+		var mCorreo = document.getElementById("responrptacorreo").innerHTML
+		var mEnviar = {xidmsg:mId, xrpta:mRpta, xcorreo:mCorreo }
+		if ( mRpta == '' || mRpta == 'null' ) {
+            document.getElementById("msgservidormsg").innerHTML = "Mensaje en Blanco"
+            document.getElementById('msgservidormsg').style.color = "red"
+            document.getElementById('msgservidormsg').style.display = 'block'
+			return
+		}
+        document.getElementById('miloader').style.display = 'block'
+        $.post("/mensajeriaenviar",mEnviar, function(data){
+        	if (data == "error") {
+                document.getElementById("msgservidormsg").innerHTML = "No se pudo Guardar ni enviar"
+                document.getElementById('msgservidormsg').style.color = "red"
+                document.getElementById('msgservidormsg').style.display = 'block'
+    		}
+        	if (data == "error envio") {
+                document.getElementById("msgservidormsg").innerHTML = "No se pudo enviar"
+                document.getElementById('msgservidormsg').style.color = "red"
+                document.getElementById('msgservidormsg').style.display = 'block'
+    		}
+        	if (data == "Enviado") {
+		        document.getElementById('miloader').style.display = 'none'
+				$("#modalresponderMSG").modal('toggle')
+				llenarLista('Creado')
+    		}
+        })		
+	}
+	function eliminarRpta(mId){
+		document.getElementById('loader_Eliminarrpta').style.display = 'none'
+		document.getElementById("idRptaEliminar").innerHTML = mId
+		$("#eliminarRptaModal").modal()
+	}
+	function eliminarRptadelServer(){
+		document.getElementById('loader_Eliminarrpta').style.display = 'block'
+		var mId = document.getElementById("idRptaEliminar").innerHTML
+		var mEnviar = {xid:mId}
+      $.get("/mensajerirtpaeliminar",mEnviar, function(data){
+        	if (data == "Eliminado") {
+				      var mFiltro = document.getElementById("mFiltro").innerHTML
+        		  llenarLista(mFiltro)
+		      }
+		  })		
+	}
+</script>

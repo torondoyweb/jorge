@@ -1,0 +1,144 @@
+<style>
+    body {font-family: Arial, Helvetica, sans-serif;}
+    /*input[type=text], input[type=password] {*/
+    input[class="usrreg"] {        
+        width: 100%;
+        padding: 5px;
+        margin: 5px 0 22px 0;
+        display: inline-block;
+        border: none;
+        background: #f1f1f1;
+        font-size: 20px;
+    }
+    /*input[type=text]:focus, input[type=password]:focus {*/
+    input[class="usrreg"]:focus {        
+        background-color: #ddd;
+        outline: none;
+    }
+    /*hr {*/
+    .hr_regusu{
+        border: 1px solid #f1f1f1;
+        margin-bottom: 25px;
+    }
+    /* Set a style for all buttons */
+    /*button {*/
+    .button_regusu {
+        background-color: #4CAF50;
+        color: white;
+        padding: 14px 20px;
+        margin: 8px 0;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        opacity: 0.9;
+    }
+    /*button:hover {*/
+    .button_regusu {
+        opacity:1;
+    }
+    /* Extra styles for the cancel button */
+    .cancelbtn {
+        padding: 14px 20px;
+        background-color: #f44336;
+    }
+    /* Float cancel and signup buttons and add an equal width */
+    .cancelbtn, .signupbtn {
+      float: left;
+      width: 50%;
+    }
+    /* Add padding to container elements */
+    .container_regusu{
+        padding: 16px;        
+    }
+    /* Clear floats */
+    .clearfix::after {
+        content: "";
+        clear: both;
+        display: table;
+    }
+    /* Change styles for cancel button and signup button on extra small screens */
+    @media screen and (max-width: 300px) {
+        .cancelbtn, .signupbtn {
+           width: 100%;
+        }
+    }
+</style>
+<p id="msgRegUsuario" style="font-size: 25px; text-align:center; display:none;">Mensaje</p>
+<form  action="javascript:void(0)" method="POST" onsubmit="enviarUsr()" >
+      <div class="container container_regusu">
+        <h3>Registro de Usuario</h3>
+        <p>Por Favor Llene todos los Campos</p>
+        <hr class="hr_regusu">
+        <input type="text" class="usrreg" placeholder="Correo" id="usuarioLogin" required>
+        <input type="text" class="usrreg" placeholder="Nombres" id="usuarioNombres" required>
+        <input type="password" class="usrreg" placeholder="Clave" id="usuarioPsw" required>
+        <input type="password" class="usrreg" placeholder="Repita Clave" id="pswRepeat" required>
+        <div class="clearfix">
+          <button type="submit" class="signupbtn button_regusu">Guardar</button>
+          <button type="button" class="cancelbtn button_regusu" onclick="cancelarUsr()">Cancelar</button>
+        </div>
+      </div>
+</form>
+
+<script>
+    $(function(){
+        minflogin = {{{xinflogin}}} // Sin (var) se hace una variable global
+        $("#usuarioLogin").focus(function(){ $("#msgRegUsuario").hide() })
+        $("#usuarioNombres").focus(function(){ $("#msgRegUsuario").hide() })
+        $("#usuarioPsw").focus(function(){ $("#msgRegUsuario").hide() })
+        $("#pswRepeat").focus(function(){ $("#msgRegUsuario").hide() })
+        document.getElementById("usuarioLogin").value = ''
+        document.getElementById("usuarioNombres").value = ''
+        document.getElementById("usuarioPsw").value = ''
+        document.getElementById("pswRepeat").value = ''
+    })
+    function cancelarUsr(){
+        window.open('/','_self')
+        return
+    }
+    function enviarUsr() {
+        var mLogin = document.getElementById("usuarioLogin").value.trim()
+        var mNombres = document.getElementById("usuarioNombres").value.trim()
+        var mPw = document.getElementById("usuarioPsw").value.trim()
+        var mPswrepeat = document.getElementById("pswRepeat").value.trim()
+
+        var emailRegex = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i
+        if (!emailRegex.test(mLogin)) {
+            document.getElementById("msgRegUsuario").innerHTML = "Correo Invalido"
+            document.getElementById('msgRegUsuario').style.color = "red"
+            document.getElementById('msgRegUsuario').style.display = 'block'
+            return
+        }
+        if ( mPw != mPswrepeat ){
+            document.getElementById("msgRegUsuario").innerHTML = "Clave no Coincide"
+            document.getElementById('msgRegUsuario').style.color = "red"
+            document.getElementById('msgRegUsuario').style.display = 'block'
+            return            
+        }
+        var encrypted = CryptoJS.AES.encrypt(mPw, minflogin.acycinckpw)
+        mPw = encrypted.toString(CryptoJS.enc.utf8)
+        var mEnviar = { xlogin:mLogin, xnom:mNombres, xpw:mPw }
+        $.post("/usuarioregistroguardar",mEnviar,function(data) {
+            if (data == "Guardado") {
+                document.getElementById("msgRegUsuario").innerHTML = "Datos Guardado correctamente"
+                document.getElementById('msgRegUsuario').style.color = "green"
+                document.getElementById('msgRegUsuario').style.display = 'block'
+                $(".signupbtn").remove()
+                $(".cancelbtn").css("background-color", "blue")
+                $(".cancelbtn").css("color", "white")
+                $(".cancelbtn").text("Cerrar")
+            }
+            if (data == "1062") {
+                document.getElementById("msgRegUsuario").innerHTML = "Usuario ya Existe"
+                document.getElementById('msgRegUsuario').style.color = "red"
+                document.getElementById('msgRegUsuario').style.display = 'block'
+            }
+            if (data == "error") {
+                document.getElementById("msgRegUsuario").innerHTML = "No se Pudo Guardar"
+                document.getElementById('msgRegUsuario').style.color = "red"
+                document.getElementById('msgRegUsuario').style.display = 'block'
+            }
+        })
+    }
+
+</script>

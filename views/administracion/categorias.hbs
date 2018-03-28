@@ -1,0 +1,253 @@
+<style>
+  #editar{
+    display: none
+  }
+  #idregistro{
+    display: none
+  }
+</style>
+
+
+<div class="container">
+    <div class="panel-group">
+
+        <div class="panel panel-primary">
+            <div class="panel-heading">Categorias</div>
+            <div class="panel-body">
+                <form id="agregar" action="javascript:void(0)" method="POST" onsubmit="app.Add()">
+                    <div class="input-group">
+                          <input id="nuevo" type="text" class="form-control" placeholder="Nueva Categoria">
+                          <div class="input-group-btn">
+                                <button class="btn btn-success" type="submit">
+                                    <i class="glyphicon glyphicon-plus"></i>
+                                </button>
+                          </div>
+                    </div>
+                    <br>
+                </form>
+
+                <form id="editar" action="javascript:void(0)">
+                    <div class="input-group">
+                          <p id="idregistro"></p>
+                          <input type="text" id="editarcat" class="form-control">
+                          <div class="input-group-btn">
+                              <p></p>
+                          </div>
+                          <div class="input-group-btn">
+                                <button class="btn btn-success" type="submit" onclick="app.saveEdit()"> 
+                                    <i class="glyphicon glyphicon-ok"></i>  
+                                </button>
+                          </div>
+                          <div class="input-group-btn">
+                              <p></p>
+                          </div>
+                          <div class="input-group-btn">
+                                <button class="btn btn-warning" type="submit" onclick="app.cancelarEdit()">
+                                      <i class="glyphicon glyphicon-remove"></i>
+                                </button>
+                          </div>
+                    </div>
+                    <br>
+                </form>
+
+                <table id="table" class="table table-bordered">
+                    <tr></tr>
+                    <tbody></tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Inicio Modal -->
+    <div class="modal fade" id="myModal" role="dialog">
+      <div class="modal-dialog">
+      
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h3 class="modal-title">
+                  <i class="glyphicon glyphicon-trash"></i> Eliminar Categoria
+              </h3>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal" type="submit" onclick="app.Borrar()">
+            Si
+            </button>
+            <button type="button" class="btn btn-info" data-dismiss="modal">No</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    <!-- Fin Modal -->
+
+</div>
+
+<script type="text/javascript">
+    var app = new function() {
+        this.FetchAll = function() {
+            var tb = document.getElementById('table')
+            while(tb.rows.length > 1) {
+              tb.deleteRow(1)
+            }
+            $.get("/categoriaslist", function(data){
+                var mS = ''
+                var mLista = data
+                $.each(mLista, function(index, element) { 
+                    mS = ''
+                    mS += '<tr>'
+                    mS += '<td style="display:none">' + element.id + '</td>'
+                    mS += '<td>' + element.nombre + '</td>'
+                    mS += '<td style="width:120px">'
+                    mS += '<button class="btn btn-info" onclick="app.Edit(' + index + ')">'
+                    mS += '<span class="glyphicon glyphicon-pencil"></span></button>   '
+                    mS += '<button class="btn btn-danger" onclick="app.preDel(' + index + ')">'
+                    mS += '<span class="glyphicon glyphicon-trash"></span></button>'
+                    mS += "</td>"
+                    mS += '</tr>'
+                    $('#table tr:last').after( mS )
+                })
+            })  
+        }
+        this.Add = function () {
+            var mElemento = document.getElementById('nuevo')
+            var mNombre = mElemento.value
+            if (mNombre) {
+                var tb = document.getElementById('table')
+                while(tb.rows.length > 1) {
+                    tb.deleteRow(1)
+                }
+                var mS = ''
+                var tb = document.getElementById('table')
+                var mIndex = tb.rows.length-1 // El encabezado es una fila Pero el Indice empieza de 0
+                $.post("/categoriaagregar",{ xnombrecat: mNombre},function(data) {
+                    if (data == "Guardado") {
+                        $.get("/categoriaslist", function(data){
+                            var mS = ''
+                            var mLista = data
+                            $.each(mLista, function(index, element) { 
+                                mS = ''
+                                mS += '<tr>'
+                                mS += '<td style="display:none">' + element.id + '</td>'
+                                mS += '<td>' + element.nombre + '</td>'
+                                mS += '<td style="width:120px">'
+                                mS += '<button class="btn btn-info" onclick="app.Edit(' + index + ')">'
+                                mS += '<span class="glyphicon glyphicon-pencil"></span></button>   '
+                                mS += '<button class="btn btn-danger" onclick="app.preDel(' + index + ')">'
+                                mS += '<span class="glyphicon glyphicon-trash"></span></button>'
+                                mS += "</td>"
+                                mS += '</tr>'
+                                $('#table tr:last').after( mS )
+                            })
+                        })  
+                    }
+                })
+                mElemento.value = ''
+            }
+        }
+        this.Edit = function (item) {
+            var mTable = document.getElementById('table')
+            document.getElementById('editar').style.display = 'block'
+            document.getElementById('agregar').style.display = 'none'
+            
+            document.getElementById("idregistro").innerHTML = mTable.rows[item+1].cells[0].innerHTML
+            var mValue = document.getElementById('editarcat')
+            mValue.value = mTable.rows[item+1].cells[1].innerHTML
+        }
+        this.cancelarEdit = function () {
+            var mValue = document.getElementById('editarcat')
+            mValue.value = ""
+            document.getElementById("idregistro").innerHTML = ""
+            document.getElementById('editar').style.display = 'none'
+            document.getElementById('agregar').style.display = 'block'
+        }
+        this.saveEdit = function () {
+            var mValue = document.getElementById('editarcat')
+            if (mValue.value) {
+                var mId = document.getElementById("idregistro").innerHTML
+                var mNombre = mValue.value.trim()
+                if (mNombre!=""){
+                    $.post("/categoriasaveedit",{ xnombrecat: mNombre,xidcat:mId},function(data) {
+                        if (data == "Guardado") {
+                            var tb = document.getElementById('table')
+                            while(tb.rows.length > 1) {
+                               tb.deleteRow(1)
+                            }
+                            $.get("/categoriaslist", function(data){
+                                var mLista = data
+                                $.each(mLista, function(index, element) { 
+                                    mS = ''
+                                    mS += '<tr>'
+                                    mS += '<td style="display:none">' + element.id + '</td>'
+                                    mS += '<td>' + element.nombre + '</td>'
+                                    mS += '<td style="width:120px">'
+                                    mS += '<button class="btn btn-info" onclick="app.Edit(' + index + ')">'
+                                    mS += '<span class="glyphicon glyphicon-pencil"></span></button>   '
+                                    mS += '<button class="btn btn-danger" onclick="app.preDel(' + index + ')">'
+                                    mS += '<span class="glyphicon glyphicon-trash"></span></button>'
+                                    mS += "</td>"
+                                    mS += '</tr>'
+                                    $('#table tr:last').after( mS )
+                                })
+                                var mValue = document.getElementById('editarcat')
+                                mValue.value = ""
+                                document.getElementById("idregistro").innerHTML = ""
+                                document.getElementById('editar').style.display = 'none'
+                                document.getElementById('agregar').style.display = 'block'
+                            })
+                        }
+                    })
+                }
+            }
+        }
+        this.preDel = function (item) {
+            var mTable = document.getElementById('table')
+            document.getElementById("idregistro").innerHTML = mTable.rows[item+1].cells[0].innerHTML
+            $(function(){
+                $("#myModal").modal()
+            })
+        }
+        this.Borrar = function () {
+            var mId = document.getElementById("idregistro").innerHTML
+            $.post("/categoriaborrar",{ xidcat:mId},function(data) {
+                  if (data == "Borrado") {
+                      var tb = document.getElementById('table')
+                      while(tb.rows.length > 1) {
+                          tb.deleteRow(1)
+                      }
+                      $.get("/categoriaslist", function(data){
+                          var mLista = data
+                          $.each(mLista, function(index, element) { 
+                              mS = ''
+                              mS += '<tr>'
+                              mS += '<td style="display:none">' + element.id + '</td>'
+                              mS += '<td>' + element.nombre + '</td>'
+                              mS += '<td style="width:120px">'
+                              mS += '<button class="btn btn-info" onclick="app.Edit(' + index + ')">'
+                              mS += '<span class="glyphicon glyphicon-pencil"></span></button>   '
+                              mS += '<button class="btn btn-danger" onclick="app.preDel(' + index + ')">'
+                              mS += '<span class="glyphicon glyphicon-trash"></span></button>'
+                              mS += "</td>"
+                              mS += '</tr>'
+                              $('#table tr:last').after( mS )
+                          })
+                      })
+                  }
+            })
+            document.getElementById("idregistro").innerHTML = ""
+        }
+
+
+    }  // Fin de app
+
+    app.FetchAll()
+    function CloseInput() {
+      document.getElementById('editar').style.display = 'none';
+    }
+</script>
+
+
+

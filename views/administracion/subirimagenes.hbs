@@ -1,0 +1,94 @@
+<style>
+    .file {
+        visibility: hidden;
+        position: absolute;
+    }
+    #mLaimagen {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 50%;
+    }
+    #msgGuardarImagen {
+        display: none;
+        font-size: 20px;
+    }    
+</style>
+<div class="container">
+    <div class="alert alert-warning">
+      <strong>Por favor!</strong> Seleccione archivos con extensión .jpg menores a 100 KB
+    </div>
+    <div class="form-group" enctype="multipart/form-data">
+        <input type="file" class="file" id="imagen">
+        <div class="input-group col-xs-12">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-picture"></i></span>
+            <input type="text" class="form-control input-lg" disabled placeholder="Seleccione Imagen">
+            <span class="input-group-btn">
+                <button class="browse btn btn-primary input-lg" type="button">
+                      <i class="glyphicon glyphicon-search"></i> Buscar Imagen
+                </button>
+            </span>
+        </div>
+    </div>
+    <img class="img-thumbnail" alt="Imagen a Subir" width="304" height="236" id="mLaimagen" class="center"> 
+    <div class="row text-center">
+        <p id="msgGuardarImagen"></p>
+        <p></p>
+        <button type="button" id="enviando" class="btn btn-info btn-lg" onclick="subirImagen()">
+        Enviar Imagen
+        </button>
+    </div>        
+</div>
+<script>
+    $(document).on('click', '.browse', function(){
+        document.getElementById('msgGuardarImagen').style.display = 'none'
+        var file = $(this).parent().parent().parent().find('.file')
+        file.trigger('click')
+    });
+    $(document).on('change', '.file', function(){
+        var file = this.files[0]
+        if (file.size <= 153600 && file.type == 'image/jpeg') {
+            $(this).parent().find('.form-control').val($(this).val().replace(/C:\\fakepath\\/i,''))
+            mFiles = event.target.files
+            var mImg = $(".file").val()
+            $("#mLaimagen").attr("src",mImg)
+        } else {
+            alert('Las Imagenes deben ser menor o igual a 150 KB y La extensión .jpg')
+        }
+    })
+    function subirImagen(){
+        document.getElementById('msgGuardarImagen').style.display = 'none'
+        $("#enviando").text("Enviando Imagen...")
+        $('#enviando').removeClass('btn btn-info').addClass('btn btn-default')
+        $('#enviando').attr("disabled", true)
+        var mImagen = document.getElementById('imagen') 
+        var file = mImagen.files[0]
+        var data = new FormData()
+        data.append('ximagen',file)
+        $.ajax({  
+                url:"/grabarimagen",
+                type:'POST',
+                contentType:false,
+                data:data,
+                processData:false,
+                cache:false,
+                success: function(mRep){ habilitarBotom(mRep) }
+        })        
+    }
+    function habilitarBotom(mRep){
+        $("#enviando").text("Enviar Imagen")
+        $('#enviando').removeClass('btn btn-default').addClass('btn btn-info')
+        $('#enviando').attr("disabled", false)
+        if ( mRep ){
+            document.getElementById("msgGuardarImagen").innerHTML = "Imagen Enviada con Exito"
+            document.getElementById('msgGuardarImagen').style.color = "green"
+            document.getElementById('msgGuardarImagen').style.display = 'block'
+        }
+        if ( !mRep ){
+            document.getElementById("msgGuardarImagen").innerHTML = "Error al enviar Imagen"
+            document.getElementById('msgGuardarImagen').style.color = "red"
+            document.getElementById('msgGuardarImagen').style.display = 'block'
+        }
+    }
+
+</script>

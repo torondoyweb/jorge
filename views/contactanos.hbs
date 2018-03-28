@@ -1,0 +1,95 @@
+<style>
+    /* Style inputs with type="text", select elements and textareas */
+    .contactanos {
+        font-size: 20px;
+        width: 100%; /* Full width */
+        padding: 12px; /* Some padding */  
+        border: 1px solid #ccc; /* Gray border */
+        border-radius: 4px; /* Rounded borders */
+        box-sizing: border-box; /* Make sure that padding and width stays in place */
+        margin-top: 6px; /* Add a top margin */
+        margin-bottom: 16px; /* Bottom margin */
+        resize: vertical /* Allow the user to vertically resize the textarea (not horizontally) */
+    }
+    /* Add a background color and some padding around the form */
+    .container_contactanos{
+        border-radius: 5px;
+        background-color: #f2f2f2;
+        padding: 20px;
+    }
+    #msgUsrcontact{
+        text-align: left;
+        font-size: 25px;
+    }
+    .btncontactanos{
+        text-align: right;
+    }
+    .btn_contactanos{
+        font-size: 20px;
+    }
+</style>
+
+<div class="container container_contactanos">
+    <form>
+        <label>Nombres</label>
+        <input type="text" id="nombrescontact" class="contactanos" placeholder="Nombres..">
+        <label>Correo</label>
+        <input type="text" id="emailcontact" class="contactanos" placeholder="Correo">
+        <label >Mensaje</label>
+        <textarea id="mensajecontact" class="contactanos" placeholder="Escribe un Mensaje.." style="height:200px"></textarea>
+        <div class="row">
+            <div class="col-sm-6">
+                <p id="msgUsrcontact"></p>
+            </div>
+            <div class="col-sm-6 btncontactanos">
+                <button type="button" class="btn btn-success btenvcont btn_contactanos" onclick="enviarContactanos()">Enviar</button>
+                <button type="button" class="btn btn-warning btcanccont btn_contactanos" onclick="cancelarContactanos()">Cancelar</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    $(function(){
+        $("#nombrescontact").focus(function(){ $("#msgUsrcontact").hide() })
+        $("#emailcontact").focus(function(){ $("#msgUsrcontact").hide() })
+        $("#mensajecontact").focus(function(){ $("#msgUsrcontact").hide() })
+    })
+    function cancelarContactanos(){
+        window.open('/','_self')
+    }
+    function enviarContactanos(){
+        var mNombres = document.getElementById("nombrescontact").value.trim()
+        var mMensaje = document.getElementById("mensajecontact").value.trim()
+        var mEmail = document.getElementById("emailcontact").value.trim()
+        var emailRegex = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i
+        if (!emailRegex.test(mEmail)) {
+            document.getElementById("msgUsrcontact").innerHTML = "Correo Invalido"
+            document.getElementById('msgUsrcontact').style.color = "red"
+            document.getElementById('msgUsrcontact').style.display = 'block'
+            return
+        }
+        if ( mNombres=='' || mMensaje=='' ) {
+            document.getElementById("msgUsrcontact").innerHTML = "Datos Incorrectos"
+            document.getElementById('msgUsrcontact').style.color = "red"
+            document.getElementById('msgUsrcontact').style.display = 'block'
+            return
+        }
+        var mEnviar = { xnombres:mNombres, xemail:mEmail, xmsg:mMensaje }
+        $.post("/contactanosguardar",mEnviar,function(data) {
+            if (data == "Guardado") {
+                document.getElementById("msgUsrcontact").innerHTML = "Datos Enviados con Exito"
+                document.getElementById('msgUsrcontact').style.color = "green"
+                document.getElementById('msgUsrcontact').style.display = 'block'
+                $(".btenvcont").remove()
+                $('.btcanccont').removeClass('btn btn-warning').addClass('btn btn-primary')
+                $(".btcanccont").text("Cerrar")
+            }
+            if (data == "error") {
+                document.getElementById("msgUsrcontact").innerHTML = "No se Pudo Enviar"
+                document.getElementById('msgUsrcontact').style.color = "red"
+                document.getElementById('msgUsrcontact').style.display = 'block'
+            }
+        })
+    }
+</script>

@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+  	<meta charset="utf-8">
+    <title>Tu Repuesto</title>
+
+    <!---
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  	<meta name="viewport" content="width=device-width, initial-scale=1">
+  	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/bootstrap-337/jquery331/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>    
+    -->
+    
+<!--
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+-->
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/bootstrap-337/css/bootstrap.min.css">
+    <script src="/bootstrap-337/jquery331/jquery.min.js"></script>
+    <script src="/bootstrap-337/js/bootstrap.min.js"></script>
+    <script src="/cloudflare/aes.js"></script>
+    <script src="/javascripts/funciones.js"></script>
+    <style>
+          body {
+            padding: 0;
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+          }
+          /* ------------ Encabezado de Pagina */
+          .logo {
+              padding: 0;
+              margin: 0;
+          }
+          .divinfUsuario{
+              text-align:right;
+              padding-top: 10px;
+          }
+          #logodelogin{
+              font-size: 20px;
+              vertical-align: text-bottom;            
+          }
+          #infLogin{
+              padding: 0;
+              font-size: 20px;
+              color:green;
+          }
+          #infCarrito {
+              padding: 0;
+              font-size: 25px;
+              text-decoration: none;
+          }
+          .glyphicon-shopping-cart {
+              font-size: 25px; 
+              color: blue;
+              vertical-align: text-bottom;
+          }
+
+          /* --------------------------------- */
+          /* -------------------------- NavBar */
+          .navbar-collapse a {
+              font-size: 17px;
+          }
+          .navbar-default {
+            border: 0;
+            background-color: #04650f;
+            border-color: #ee1c07;
+          }
+          .navbar-default .navbar-brand {
+            color: #ffffff;
+          }
+          .navbar-default .navbar-brand:hover,
+          .navbar-default .navbar-brand:focus {
+            color: #000000;
+          }
+          .navbar-default .navbar-text {
+            color: #ffffff;
+          }
+          .navbar-default .navbar-nav > li > a {
+            color: #ffffff;
+          }
+          .navbar-default .navbar-nav > li > a:hover,
+          .navbar-default .navbar-nav > li > a:focus {
+            color: #000000;
+          }
+          .navbar-default .navbar-nav > li > .dropdown-menu {
+            background-color: #04650f;
+          }
+          .navbar-default .navbar-nav > li > .dropdown-menu > li > a {
+            color: #ffffff;
+          }
+          .navbar-default .navbar-nav > li > .dropdown-menu > li > a:hover,
+          .navbar-default .navbar-nav > li > .dropdown-menu > li > a:focus {
+            color: #000000;
+            background-color: #ee1c07;
+          }
+          .navbar-default .navbar-nav > li > .dropdown-menu > li.divider {
+            background-color: #ee1c07;
+          }
+          .navbar-default .navbar-nav .open .dropdown-menu > .active > a,
+          .navbar-default .navbar-nav .open .dropdown-menu > .active > a:hover,
+          .navbar-default .navbar-nav .open .dropdown-menu > .active > a:focus {
+            color: #000000;
+            background-color: #ee1c07;
+          }
+          .navbar-default .navbar-nav > .active > a,
+          .navbar-default .navbar-nav > .active > a:hover,
+          .navbar-default .navbar-nav > .active > a:focus {
+            color: #000000;
+            background-color: #ee1c07;
+          }
+          .navbar-default .navbar-nav > .open > a,
+          .navbar-default .navbar-nav > .open > a:hover,
+          .navbar-default .navbar-nav > .open > a:focus {
+            color: #000000;
+            background-color: #ee1c07;
+          }
+          .navbar-default .navbar-toggle {
+            border-color: #ee1c07;
+          }
+          .navbar-default .navbar-toggle:hover,
+          .navbar-default .navbar-toggle:focus {
+            background-color: #ee1c07;
+          }
+          .navbar-default .navbar-toggle .icon-bar {
+            background-color: #ffffff;
+          }
+          .navbar-default .navbar-collapse,
+          .navbar-default .navbar-form {
+            border-color: #ffffff;
+          }
+          .navbar-default .navbar-link {
+            color: #ffffff;
+          }
+          .navbar-default .navbar-link:hover {
+            color: #000000;
+          }
+
+          @media (max-width: 767px) {
+              .navbar-default .navbar-nav .open .dropdown-menu > li > a {
+                color: #ffffff;
+              }
+              .navbar-default .navbar-nav .open .dropdown-menu > li > a:hover,
+              .navbar-default .navbar-nav .open .dropdown-menu > li > a:focus {
+                color: #000000;
+              }
+              .navbar-default .navbar-nav .open .dropdown-menu > .active > a,
+              .navbar-default .navbar-nav .open .dropdown-menu > .active > a:hover,
+              .navbar-default .navbar-nav .open .dropdown-menu > .active > a:focus {
+                color: #000000;
+                background-color: #ee1c07;
+              }
+              .logo {
+                text-align:center;
+              }
+              .divinfUsuario{
+                text-align:center;
+                margin:0px;
+              }
+          }
+          /* --------------------------------- */
+          /* --------------------------- Modales */
+          .modal-header, .close {
+              background-color: #5cb85c;
+              color:white !important;
+              text-align: center;
+              font-size: 30px;
+              padding:10px 15px 5px 0px;
+          }
+          .modal-body{
+              font-size: 16px;
+          }
+          #modalLoginusername, #modalLoginpsw {
+              font-size: 20px; 
+          }
+          .modal-footer {
+              background-color: #f9f9f9;
+          }
+          /* --------------------------------- */
+          .loader {
+              border: 16px solid #f3f3f3;
+              border-radius: 50%;
+              border-top: 16px solid #3498db;
+              width: 20px;
+              height: 20px;
+              -webkit-animation: spin 2s linear infinite; /* Safari */
+              animation: spin 2s linear infinite;
+          }
+          /* Safari */
+          @-webkit-keyframes spin {
+            0% { -webkit-transform: rotate(0deg); }
+            100% { -webkit-transform: rotate(360deg); }
+          }
+
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+    </style>
+  </head>
+<body >
+    <div class="container-fluid">
+        <div class="col-sm-6 logo">
+            <img src="/images/logo.jpg" class="img-rounded" alt="Cinque Terre" width="150" height="96"> 
+        </div>
+        <div class="col-sm-6 divinfUsuario">
+            <span id="logodelogin" class="glyphicon glyphicon-log-in"></span>
+            <button class="btn btn-link" id="infLogin" onclick="ppal.ppalLogin()"></button>
+
+            <p></p>
+            <span class="glyphicon glyphicon-shopping-cart"></span>
+            <button class="btn btn-link" id="infCarrito"></button>
+        </div>
+    </div>
+    <!--  *************************** navbar Principal  -->
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/catalogo">Catálogo</a>
+        </div>
+        <div class="collapse navbar-collapse" id="myNavbar">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="/"><span class="glyphicon glyphicon-home"></span></a></li>
+            <li><a href="/contactanos">Contactanos</a></li>
+            <li class="dropdown">
+              <a class="dropdown-toggle" data-toggle="dropdown" href="#">Administración &#9782;</a>
+              <ul class="dropdown-menu">
+                  <li><a href="/categorias">Categorias</a></li>
+                  <li><a href="/repuestos">Repuestos</a></li>
+                  <li><a href="/mensajeria">Mensajeria</a></li>
+                  <li><a href="/subirimagenes">Subir Imagenes</a></li>
+                  <li><a href="/admusuarios">Usuarios</a></li>
+                  <li><a href="/basededatos">Base de Datos</a></li>
+              </ul>
+            </li>
+            <li><a href="#">Nosotros</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/cerrarcesion"><span class="glyphicon glyphicon-log-out"></span> Cerrar</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <!--  ********************************************  -->
+    <!--  ************************************** Login  -->
+    <div class="modal fade" id="modalLogin" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header" >
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <span class="glyphicon glyphicon-lock"></span> Entrar
+          </div>
+          <div class="modal-body" style="padding:40px 50px;">
+            <p id="msgEntUsuario" style="font-size: 25px; text-align:center; display:none;">Mensaje</p>
+            <form role="form" action="javascript:void(0)" method="POST" onsubmit="ppal.Entrar()">
+              <p id="msgEntrar" style="font-size: 25px; text-align:center; display:none;">Mensaje</p>          
+              <div class="form-group">
+                <label for="usrname">
+                    <span class="glyphicon glyphicon-user"></span> Correo
+                </label>
+                <input type="text" class="form-control" id="modalLoginusername" placeholder="correo">
+              </div>
+              <div class="form-group">
+                <label for="psw"><span class="glyphicon glyphicon-eye-open"></span> Clave</label>
+                <input type="password" class="form-control" id="modalLoginpsw" placeholder="clave">
+              </div>
+                <button type="submit" class="btn btn-success btn-block">
+                  <span class="glyphicon glyphicon-off"></span> Entrar</button>
+            </form>
+          </div>
+          <div class="modal-footer">
+              <button class="btn btn-link pull-left" onclick="ppal.signupLogin()">
+              Registrarme
+              </button>
+              <button class="btn btn-link pull-left" style="color:red" onclick="ppal.olvideClave()">
+              <span class="glyphicon glyphicon-bell"></span> Olvidé mi Clave
+              </button>
+              <button type="submit" class="btn btn-primary pull-right" data-dismiss="modal">
+              <span class="glyphicon glyphicon-remove"></span> Cancelar</button>
+          </div>
+        </div>
+      </div>
+    </div> 
+    <!--  ********************************************  -->
+    <!--  ******************* Mensaje General todo uso  -->
+    <div class="modal fade" id="msgbox" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" >
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <span class="glyphicon glyphicon-flag" id="msgboxtitulo">
+                    </span>
+                </div>
+                <div class="modal-body">
+                    <h2 id="msgboxcuerpo"></h2>
+                </div>
+            </div>
+        </div>
+    </div> 
+    <!--  ********************************************  -->
+    {{{body}}}
+  </body>
+  <script>
+      $(function(){
+          minflogin = {{{xinflogin}}} // Sin (var) se hace una variable global
+          minfcarrito = {{{xinfcarrito}}}
+          $("#modalLoginusername").focus(function(){$("#msgEntUsuario").hide()})
+          $("#modalLoginpsw").focus(function(){ $("#msgEntUsuario").hide() })
+          $('#infLogin').text(minflogin.nombres)
+          if (minflogin.nombres=='Entrar') {
+              $('#logodelogin').removeClass('glyphicon glyphicon-user').addClass('glyphicon glyphicon-log-in')  
+          } else {
+              $('#logodelogin').removeClass('glyphicon glyphicon-log-in').addClass('glyphicon glyphicon-user')  
+          }
+          $('#infCarrito').text(minfcarrito.items + ', ' + minfcarrito.nombre )
+      })
+      var ppal = new function() {
+            this.ppalLogin = function(){
+                document.getElementById("modalLoginusername").value = ''
+                document.getElementById("modalLoginpsw").value = ''
+                $("#modalLogin").modal()
+            }
+            this.signupLogin = function(){
+                $('#modalLogin').modal('toggle')
+                window.open('/usuarioregistro','_self')
+            }
+            this.olvideClave = function(){
+                var mLogin = document.getElementById("modalLoginusername").value.trim()
+                var emailRegex = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i
+                if (!emailRegex.test(mLogin)) {
+                    document.getElementById("msgEntUsuario").innerHTML = "Correo Invalido"
+                    document.getElementById('msgEntUsuario').style.color = "red"
+                    document.getElementById('msgEntUsuario').style.display = 'block'
+                    return
+                }
+                var encrypted = CryptoJS.AES.encrypt(mLogin, minflogin.acycinckpw)
+                mLogin = encrypted.toString(CryptoJS.enc.utf8)
+                var mEnviar = {xlogin: mLogin}
+                $.post("/enviarclave",mEnviar,function(data) {
+                })
+                $('#modalLogin').modal('toggle')
+                $("#msgboxtitulo").text("")
+                $("#msgboxcuerpo").text("Clave enviada")
+                $("#msgbox").modal()
+            }
+            this.Entrar = function(){
+                var mLogin = document.getElementById("modalLoginusername").value.trim()
+                var mPw = document.getElementById("modalLoginpsw").value.trim()
+                var mRemenber = "No"
+                var encrypted = ''
+                encrypted = CryptoJS.AES.encrypt(mLogin, minflogin.acycinckpw)
+                mLogin = encrypted.toString(CryptoJS.enc.utf8)
+                encrypted = CryptoJS.AES.encrypt(mPw, minflogin.acycinckpw)
+                mPw = encrypted.toString(CryptoJS.enc.utf8)
+                var mEnviar = { xlogin:mLogin, xpw:mPw }
+                $.post("/usuarioentrar",mEnviar,function(data) {
+                    if ( typeof(data.items) != 'undefined' ){
+                      $("#infLogin").text(data.nomusuario)
+                      $("#infCarrito").text(data.items + ", " + data.nombre)
+                      $('#modalLogin').modal('toggle')
+                    }
+                    if (data == "error") {
+                        document.getElementById("msgEntUsuario").innerHTML = "No es posible Conectar"
+                        document.getElementById('msgEntUsuario').style.color = "red"
+                        document.getElementById('msgEntUsuario').style.display = 'block'
+                    }
+                })                
+            }
+      }
+  </script>
+</html>

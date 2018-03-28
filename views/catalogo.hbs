@@ -1,0 +1,84 @@
+<style>
+	#descrip-car{
+		font-size: 18px;
+	}
+	#precio-car{
+		font-size: 25px;
+	}
+	.cant-car{
+		font-size: 20px;
+	}
+	.facar {
+	    margin-left: -6px;
+	    margin-right: 8px;
+	}
+</style>
+<div class="container">
+	<div class="row" id="catalogo">
+	</div>
+</div>
+<script>
+	$(function(){
+		load()
+    })
+	function load(){
+		$.get("/catlistrepuestos",function(data){
+			var mImagen = ''
+			var mEle = ''
+	    	var mLista = data
+	      	$.each(mLista, function(index, element) { 
+	      		mImagen = element.codigo + ".jpg"
+      			mEle = ''
+				mEle += '<div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 thumbnail">'
+				mEle += '<img class="img-responsive" src="images/repuestos/' + mImagen + '" '
+				mEle += 'alt="' + mImagen +  '">'
+				mEle += '<div class="caption">'
+				mEle += '<p id="descrip-car">'+element.nombre+', '+element.descripcion+'</p>'
+				mEle += '<p id="precio-car">Bs. '+formatN(element.precio)+'</p>'
+				mEle += '<div class="input-group">'
+    			mEle += '<span class="input-group-addon">Cantidad</span>'
+    			mEle += '<input onkeypress="return soloNumbers(event)" id="cant-'+element.id+'" '
+    			mEle += 'type="number" '
+    			mEle += 'class="form-control text-center cant-car" value="1">'
+    			mEle += '<div class="input-group-btn">'
+    			mEle += '<button class="btn btn-primary" id="boton-' + element.id + '" '
+    			mEle += 'onclick="agregarCarrito('+element.id+')">'
+    			mEle += '<i class="fa fa-cart-plus facar" id="fa-'+element.id+'"></i>Agregar'
+    			mEle += '</button>'
+    			mEle += '</div></div></div></div>'
+				$("#catalogo").append(mEle)
+	  		})
+		})
+	}
+	function agregarCarrito(mId){
+		var mNomCant = "cant-" + mId
+		if (!isNumber(document.getElementById(mNomCant).value)) { 
+			document.getElementById(mNomCant).value = 1
+		}
+		var mCant = document.getElementById(mNomCant).value
+		if ( mCant == 0 || mCant < 0 || mCant > 2 || !isInteger( mCant ) ){
+			document.getElementById(mNomCant).value = 1	
+			mCant = 1
+		}
+		$("#fa-"+mId).removeClass('fa-cart-plus').addClass('fa-spinner fa-spin')
+		$("#boton-"+mId).attr("disabled", true)
+		var mEnviar = { xidart:mId, xcant:mCant }
+		$.post("/catalogoagregar",mEnviar, function(data){
+			if (data == "error" ){
+		 	} 
+			if (data == "sin sesion" ){
+				$("#fa-"+mId).removeClass('fa-spinner fa-spin').addClass('fa-cart-plus')
+				$("#boton-"+mId).attr("disabled", false)
+                $("#msgboxtitulo").text("")
+                $("#msgboxcuerpo").text("Inicie una Sesión")
+                $("#msgbox").modal()
+		 	} 
+	 		if ( typeof(data.items) != 'undefined' ){
+	 			$("#id_del_item").text(0)
+				$("#fa-"+mId).removeClass('fa-spinner fa-spin').addClass('fa-cart-plus')
+				$("#boton-"+mId).attr("disabled", false)
+ 				$("#infCarrito").text(data.items + ", " + data.nombre)
+			}
+		})
+	}	
+</script>
