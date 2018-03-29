@@ -24,9 +24,10 @@
 	}
 </style>
 <div class="container">
-	<h3>Utilidades de Base de Datos</h3>
-	<h1>{{xbasededatos}}</h1>
-	<table id="basededatos" class="table table-bordered table-hover table-striped">
+	<h4>Utilidades de Base de Datos</h4>
+	<h1>Base de Datos: <span class="label label-default">{{xbasededatos}}</span></h1>
+	<br>
+	<table id="tablebd" class="table table-bordered table-hover" style="font-size: 25px;">
 	    <tr></tr>
 	    <tbody></tbody>
 	</table>
@@ -53,16 +54,32 @@
 	$(function(){
 	  	llenarListabd()
     })	
+	function llenarListabd(){
+		var tb = document.getElementById('tablebd')
+        while(tb.rows.length > 1) {
+          tb.deleteRow(1)
+        }
+		var mCampo = {{{xcampo}}} //nombre del campo de nombre de tablas
+		if ( mCampo != "nada" ) {
+			var mLista =  {{{xlisttablas}}}
+			var mS = ''
+		 	$.each(mLista, function(index, element) { 
+				mS = ''
+	            mS += '<tr>'
+	            mS += '<td>' + eval('element.'+mCampo) + '</td>'
+	            mS += '</tr>'
+	            $('#tablebd tr:last').after( mS )
+		 	})
+	 	}
+	}
 	jQuery('#actualizarbd').click(function(){
   		$("#spandbd").text("Actualizando...")
 		$("#iconbd").removeClass('fa fa-database').addClass('fa fa-spinner fa-spin')
 		$("#actualizarbd").attr("disabled", true)
-	})
-	function llenarListabd(){
-		var mLista =  {{{xlisttablas}}}
-	 	$.each(mLista, function(index, element) { 
-			console.log( element.Tables_in_jorge )	 		
-	 	})
-
-	}
+		$.post("/actualizarbd",function(data){
+	  		$("#spandbd").text("Actualizar Estructura")
+			$("#iconbd").removeClass('fa fa-spinner fa-spin').addClass('fa fa-database')
+			$("#actualizarbd").attr("disabled", false)
+		})
+	})	
 </script>

@@ -94,13 +94,69 @@ mHtmlfoot += '<td class="padding-right15" align="right" valign="middle" width="4
 mHtmlfoot += '</tr></tbody></table></td></tr><tr><td width="100%" height="20">&#160;</td></tr><tr>'
 mHtmlfoot += '<td width="100%" height="10">&#160;</td></tr></tbody></table></body></html>'
 
-//correo:{user: 'torondoyweb@gmail.com',pass:'875698741', servicio:'gmail'},
+var mCarrito = ""
+mCarrito += "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,"
+mCarrito += "`idusuario` int(10) unsigned NOT NULL DEFAULT '0',"
+mCarrito += "`fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,"
+mCarrito += "`estatus` varchar(12) NOT NULL DEFAULT 'Abierto',"
+mCarrito += "PRIMARY KEY (`id`)"
+var mCategorias = ""
+mCategorias += "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,"
+mCategorias += "`nombre` varchar(100) NOT NULL DEFAULT '',"
+mCategorias += "PRIMARY KEY (`id`)"
+var mDetalles = "" 
+mDetalles += "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,"
+mDetalles += "`idcarrito` int(10) unsigned NOT NULL DEFAULT '0',"
+mDetalles += "`cantidad` double(20,2) NOT NULL DEFAULT '0.00',"
+mDetalles += "`precio` double(20,2) NOT NULL DEFAULT '0.00',"
+mDetalles += "`fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,"
+mDetalles += "`idarticulo` int(10) unsigned NOT NULL DEFAULT '0',"
+mDetalles += "PRIMARY KEY (`id`)"
+var mMensajes = ""
+mMensajes += "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,"
+mMensajes += "`nombres` varchar(150) NOT NULL DEFAULT '',"
+mMensajes += "`fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,"
+mMensajes += "`mensaje` text,"
+mMensajes += "`correo` varchar(100) NOT NULL DEFAULT '',"
+mMensajes += "`estado` varchar(20) NOT NULL DEFAULT '',"
+mMensajes += "`idusuario` int(11) NOT NULL DEFAULT '0',"
+mMensajes += "`msgrepuesta` text,"
+mMensajes += "`fecharpta` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',"
+mMensajes += "PRIMARY KEY (`id`)"
+var mRepuestos = ""
+mRepuestos += "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,"
+mRepuestos += "`codigo` varchar(10) NOT NULL DEFAULT '',"
+mRepuestos += "`nombre` varchar(45) NOT NULL DEFAULT '',"
+mRepuestos += "`descripcion` varchar(45) NOT NULL DEFAULT '',"
+mRepuestos += "`disponible` varchar(2) NOT NULL DEFAULT 'No',"
+mRepuestos += "`existencia` int(10) unsigned NOT NULL DEFAULT '0',"
+mRepuestos += "`idcat` int(10) unsigned NOT NULL DEFAULT '0',"
+mRepuestos += "`precio` double(20,2) NOT NULL DEFAULT '0.00',"
+mRepuestos += "PRIMARY KEY (`id`),"
+mRepuestos += "UNIQUE KEY `codigo` (`codigo`) USING HASH"
+var mUsuarios = ""
+mUsuarios += "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,"
+mUsuarios += "`login` varchar(250) NOT NULL DEFAULT '',"
+mUsuarios += "`nombres` varchar(150) NOT NULL DEFAULT '',"
+mUsuarios += "`clave` varchar(250) NOT NULL DEFAULT '',"
+mUsuarios += "`tipo` varchar(20) NOT NULL DEFAULT 'usuario',"
+mUsuarios += "PRIMARY KEY (`id`),"
+mUsuarios += "UNIQUE KEY `login` (`login`)"
 
 module.exports = {
+	instanciaBD:{host:'localhost',port:'3306',user:'root',password:'123'},
 	db:{host:'localhost',port:'3306',user:'root',password:'123',database:'jorge'},
 	instancia:{host:'localhost',port:'3306',user:'root',password:'123'},
 	encriptacion:{secreto:'heydicastro'},
 	correo:	{ service: 'gmail',auth: {user: 'torondoyweb@gmail.com',pass:'875698741'} },
 	correofrom: {from :'torondoyweb@gmail.com'},
-	html:{cabecera:mHtmlhead, cuerpo:mHtmlbody, pie:mHtmlfoot}
+	html:{cabecera:mHtmlhead, cuerpo:mHtmlbody, pie:mHtmlfoot},
+	estruBD:{
+			carrito: mCarrito,
+			categorias: mCategorias,
+			detalles: mDetalles,
+			mensajes: mMensajes,
+			repuestos: mRepuestos,
+			usuarios: mUsuarios
+			}
 }

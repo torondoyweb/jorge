@@ -193,25 +193,99 @@ router.post('/grabarimagen', function (req, res) {
     })
 })
 router.get('/basededatos', function (req, res) {
-    var mS = "show tables from jorge"
+    var mS = "show tables from " + xbase.db.database
     var conn = mysql.createConnection( xbase.db )
     conn.connect()
     conn.query(mS,function (error, results, fields) {
         if ( error ) {
-            res.send("error")
-        }
-        if (!error){
+            infcarritoyusuario.inflogin(req,function( minflogin,minfcarrito ){
+                res.status(200).render('administracion/basededatos',{
+                      xinflogin:minflogin,
+                      xinfcarrito:minfcarrito,
+                      xbasededatos: xbase.db.database,
+                      xcampo: JSON.stringify("nada"),
+                      xlisttablas: JSON.stringify( "nada" )
+                }) 
+            })
+        } else {
             infcarritoyusuario.inflogin(req,function( minflogin,minfcarrito ){
                 res.status(200).render('administracion/basededatos',{ 
                       xinflogin:minflogin,
                       xinfcarrito:minfcarrito,
                       xbasededatos: xbase.db.database,
+                      xcampo: JSON.stringify("Tables_in_" + xbase.db.database),
                       xlisttablas: JSON.stringify( results )
                 })
             })
         }
     })
     conn.end()  
+})
+router.post('/actualizarbd', function (req, res) {
+    var mS = ""
+    
+    var conn = mysql.createConnection( xbase.instanciaBD )   
+    mS ="CREATE DATABASE " + xbase.db.database + " CHARSET=utf8"
+    conn.connect()
+    conn.query(mS,function (error, results, fields) {
+    })
+    conn.end()
+
+    conn = mysql.createConnection( xbase.db )
+    mS = "CREATE TABLE `carrito` ("
+    mS += xbase.estruBD.carrito
+    mS += ") ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8"
+    conn.connect()
+    conn.query(mS,function (error, results, fields) {
+    })
+    conn.end()
+
+    conn = mysql.createConnection( xbase.db )
+    mS = "CREATE TABLE `categorias` ("
+    mS += xbase.estruBD.categorias
+    mS += ") ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8"
+    conn.connect()
+    conn.query(mS,function (error, results, fields) {
+    })
+    conn.end()    
+
+    conn = mysql.createConnection( xbase.db )
+    mS = "CREATE TABLE `detalles` ("
+    mS += xbase.estruBD.detalles
+    mS += ") ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8"
+    conn.connect()
+    conn.query(mS,function (error, results, fields) {
+    })
+    conn.end()    
+
+    conn = mysql.createConnection( xbase.db )
+    mS = "CREATE TABLE `mensajes` ("
+    mS += xbase.estruBD.mensajes
+    mS += ") ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8"
+    conn.connect()
+    conn.query(mS,function (error, results, fields) {
+    })
+    conn.end()    
+
+    conn = mysql.createConnection( xbase.db )
+    mS = "CREATE TABLE `repuestos` ("
+    mS += xbase.estruBD.repuestos
+    mS += ") ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8"
+    conn.connect()
+    conn.query(mS,function (error, results, fields) {
+    })
+    conn.end()    
+
+    conn = mysql.createConnection( xbase.db )
+    mS = "CREATE TABLE `usuarios` ("
+    mS += xbase.estruBD.usuarios
+    mS += ") ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8"
+    conn.connect()
+    conn.query(mS,function (error, results, fields) {
+    })
+    conn.end()    
+
+    res.send(true)
 })
 
 module.exports = router
