@@ -193,6 +193,7 @@ router.post('/grabarimagen', function (req, res) {
     })
 })
 router.get('/basededatos', function (req, res) {
+    var mCampo = { campo : "Tables_in_" + xbase.db.database }
     var mS = "show tables from " + xbase.db.database
     var conn = mysql.createConnection( xbase.db )
     conn.connect()
@@ -203,17 +204,16 @@ router.get('/basededatos', function (req, res) {
                       xinflogin:minflogin,
                       xinfcarrito:minfcarrito,
                       xbasededatos: xbase.db.database,
-                      xcampo: JSON.stringify("nada"),
                       xlisttablas: JSON.stringify( "nada" )
                 }) 
             })
         } else {
+            results.unshift(mCampo) // enviar en el primer registro en nombre del campo
             infcarritoyusuario.inflogin(req,function( minflogin,minfcarrito ){
                 res.status(200).render('administracion/basededatos',{ 
                       xinflogin:minflogin,
                       xinfcarrito:minfcarrito,
                       xbasededatos: xbase.db.database,
-                      xcampo: JSON.stringify("Tables_in_" + xbase.db.database),
                       xlisttablas: JSON.stringify( results )
                 })
             })
@@ -222,70 +222,75 @@ router.get('/basededatos', function (req, res) {
     conn.end()  
 })
 router.post('/actualizarbd', function (req, res) {
+    var mCampo = { campo : "Tables_in_" + xbase.db.database }
     var mS = ""
-    
-    var conn = mysql.createConnection( xbase.instanciaBD )   
+
+    var connInstancia = mysql.createConnection( xbase.instanciaBD )   
     mS ="CREATE DATABASE " + xbase.db.database + " CHARSET=utf8"
-    conn.connect()
-    conn.query(mS,function (error, results, fields) {
+    connInstancia.connect()
+    connInstancia.query(mS,function (error, results, fields) {
+        var conn = mysql.createConnection( xbase.db )
+        mS = "CREATE TABLE `carrito` ("
+        mS += xbase.estruBD.carrito
+        mS += ") ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8"
+        conn.connect()
+        conn.query(mS,function (error, results, fields) {
+            var conn2 = mysql.createConnection( xbase.db )
+            mS = "CREATE TABLE `categorias` ("
+            mS += xbase.estruBD.categorias
+            mS += ") ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8"
+            conn2.connect()
+            conn2.query(mS,function (error, results, fields) {
+                var conn3 = mysql.createConnection( xbase.db )
+                mS = "CREATE TABLE `detalles` ("
+                mS += xbase.estruBD.detalles
+                mS += ") ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8"
+                conn3.connect()
+                conn3.query(mS,function (error, results, fields) {
+                    var conn4 = mysql.createConnection( xbase.db )
+                    mS = "CREATE TABLE `mensajes` ("
+                    mS += xbase.estruBD.mensajes
+                    mS += ") ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8"
+                    conn4.connect()
+                    conn4.query(mS,function (error, results, fields) {
+                        var conn5 = mysql.createConnection( xbase.db )
+                        mS = "CREATE TABLE `repuestos` ("
+                        mS += xbase.estruBD.repuestos
+                        mS += ") ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8"
+                        conn5.connect()
+                        conn5.query(mS,function (error, results, fields) {
+                            var conn6 = mysql.createConnection( xbase.db )
+                            mS = "CREATE TABLE `usuarios` ("
+                            mS += xbase.estruBD.usuarios
+                            mS += ") ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8"
+                            conn6.connect()
+                            conn6.query(mS,function (error, results, fields) {
+                                mS = "show tables from " + xbase.db.database
+                                var conn7 = mysql.createConnection( xbase.db )
+                                conn7.connect()
+                                conn7.query(mS,function (error, results, fields) {
+                                    if ( error ) {
+                                        res.send("error")
+                                    } else {
+                                        results.unshift(mCampo)
+                                        res.send(results)
+                                    }
+                                })
+                                conn7.end()    
+                            })
+                            conn6.end()    
+                        })
+                        conn5.end()    
+                    })
+                    conn4.end()    
+                })
+                conn3.end()    
+            })
+            conn2.end()    
+        })
+        conn.end()
     })
-    conn.end()
-
-    conn = mysql.createConnection( xbase.db )
-    mS = "CREATE TABLE `carrito` ("
-    mS += xbase.estruBD.carrito
-    mS += ") ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8"
-    conn.connect()
-    conn.query(mS,function (error, results, fields) {
-    })
-    conn.end()
-
-    conn = mysql.createConnection( xbase.db )
-    mS = "CREATE TABLE `categorias` ("
-    mS += xbase.estruBD.categorias
-    mS += ") ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8"
-    conn.connect()
-    conn.query(mS,function (error, results, fields) {
-    })
-    conn.end()    
-
-    conn = mysql.createConnection( xbase.db )
-    mS = "CREATE TABLE `detalles` ("
-    mS += xbase.estruBD.detalles
-    mS += ") ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8"
-    conn.connect()
-    conn.query(mS,function (error, results, fields) {
-    })
-    conn.end()    
-
-    conn = mysql.createConnection( xbase.db )
-    mS = "CREATE TABLE `mensajes` ("
-    mS += xbase.estruBD.mensajes
-    mS += ") ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8"
-    conn.connect()
-    conn.query(mS,function (error, results, fields) {
-    })
-    conn.end()    
-
-    conn = mysql.createConnection( xbase.db )
-    mS = "CREATE TABLE `repuestos` ("
-    mS += xbase.estruBD.repuestos
-    mS += ") ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8"
-    conn.connect()
-    conn.query(mS,function (error, results, fields) {
-    })
-    conn.end()    
-
-    conn = mysql.createConnection( xbase.db )
-    mS = "CREATE TABLE `usuarios` ("
-    mS += xbase.estruBD.usuarios
-    mS += ") ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8"
-    conn.connect()
-    conn.query(mS,function (error, results, fields) {
-    })
-    conn.end()    
-
-    res.send(true)
+    connInstancia.end()
 })
 
 module.exports = router
