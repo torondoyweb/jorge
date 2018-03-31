@@ -158,5 +158,9 @@ router.post('/enviarclave', function(req, res, next) {
     })
     conn.end()
 })
-
+router.get('/sinsesion', function(req, res, next) {
+    infcarritoyusuario.inflogin(req,function( minflogin,minfcarrito ){
+        res.status(200).render('sinsesion',{xinflogin: minflogin,xinfcarrito: minfcarrito})
+    })
+})
 module.exports = router;

@@ -17,7 +17,6 @@
 <!--
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 -->
-    <link rel='stylesheet' href='/stylesheets/style.css' />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/bootstrap-337/css/bootstrap.min.css">
     <script src="/bootstrap-337/jquery331/jquery.min.js"></script>
@@ -212,7 +211,7 @@
 
             <p></p>
             <span class="glyphicon glyphicon-shopping-cart"></span>
-            <button class="btn btn-link" id="infCarrito"></button>
+            <button class="btn btn-link" id="infCarrito" onclick="ppal.preCompra()"></button>
         </div>
     </div>
     <!--  *************************** navbar Principal  -->
@@ -373,6 +372,28 @@
                         document.getElementById('msgEntUsuario').style.display = 'block'
                     }
                 })                
+            }
+            this.preCompra = function(){
+                $.get("/verificarcompra",function(data) {
+                    if ( data == "error" ) {
+                        $("#msgboxtitulo").text("")
+                        $("#msgboxcuerpo").text("Vuelva a Intentar")
+                        $("#msgbox").modal()
+                    }
+                    if ( data == "nada" ) {
+                        $("#msgboxtitulo").text("")
+                        $("#msgboxcuerpo").text("Sin compras aun")
+                        $("#msgbox").modal()
+                    }
+                    if ( data == "sin sesion" ) {
+                        $("#msgboxtitulo").text(" Sin Compras")
+                        $("#msgboxcuerpo").text("Inicie Sesión y registre compras")
+                        $("#msgbox").modal()
+                    }
+                    if ( data == "success" ) {
+                        window.open('/precompras','_self')
+                    }
+                })
             }
       }
   </script>

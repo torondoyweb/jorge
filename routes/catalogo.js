@@ -112,32 +112,21 @@ function insertarArticulo(mReq,mIdcarrito,mIdart,mCant,callback){
     })
     conn.end()
 }
-router.get('/precompra',function(req, res, next) {
+router.get('/verificarcompra',function(req, res, next) {
     infcarritoyusuario.tablaUsuarios(req,function( usuario ){
         if ( usuario.id != 0 ) {
             var mS = ""
-            mS += "select detalles.id,detalles.cantidad,detalles.precio,"
-            mS += "detalles.fecha as fechaitem,"
-            mS += "repuestos.nombre,repuestos.codigo,"
-            mS += "carrito.fecha as fechacarrito from detalles "
-            mS += "left join repuestos on detalles.idarticulo=repuestos.id "
-            mS += "left join carrito on detalles.idcarrito=carrito.id "
-            mS += "where carrito.estatus='Abierto' and carrito.idusuario="+usuario.id 
-
+            mS += "select count(*) as precompras from detalles "
+            mS += "join carrito on carrito.id=detalles.idcarrito "
+            mS += "where carrito.estatus='Abierto' and carrito.idusuario="+usuario.id
             var conn = mysql.createConnection( xbase.db )
             conn.connect()
             conn.query(mS,function (error, results, fields) {
                 if ( error ){
                     res.status(200).send("error")
                 } else {
-                    if ( results.length > 0 ){
-                        infcarritoyusuario.inflogin(req,function( minflogin,minfcarrito ){
-                        res.status(200).render('precompra',{
-                                xinflogin: minflogin,
-                                xinfcarrito: minfcarrito,
-                                xprecompra: results
-                            })
-                        })                        
+                    if ( results[0].precompras > 0 ){
+                        res.status(200).send("success")
                     } else {
                         res.status(200).send("nada")
                     }
@@ -145,8 +134,38 @@ router.get('/precompra',function(req, res, next) {
             })
             conn.end()
         } else {
-            console.log( "Sin sesion en catalogo: /precompra")
+            console.log( "Sin sesion en catalogo: /verificarcompra")
             res.status(200).send("sin sesion")
+        }
+    })
+})
+router.get('/precompras',function(req, res, next) {
+    var mS = ""
+    mS += "select "
+    mS += "detalles.cantidad,detalles.precio,detalles.fecha,detalles.id,"
+    mS += "repuestos.nombre "
+    mS += "from detalles "
+    mS += "join repuestos on repuestos.id=detalles.idarticulo "
+    mS += "join carrito on carrito.id=detalles.idcarrito "
+    mS += "where carrito.estatus='Abierto' and idusuario="
+
+    infcarritoyusuario.tablaUsuarios(req,function( usuario ){
+        mS += usuario.id
+        if ( usuario.id != 0 ) {
+            var conn = mysql.createConnection( xbase.db )
+            conn.connect()
+            conn.query(mS,function (error, results, fields) {            
+                infcarritoyusuario.inflogin(req,function( minflogin,minfcarrito ){
+                    res.status(200).render('precompras',{
+                        xinflogin: minflogin,
+                        xinfcarrito: minfcarrito,
+                        xprecompra: results
+                    })
+                })
+            })
+            conn.end()
+        } else {
+            res.redirect('/sinsesion')
         }
     })
 })
