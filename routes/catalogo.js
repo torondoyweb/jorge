@@ -142,8 +142,9 @@ router.get('/verificarcompra',function(req, res, next) {
 router.get('/precompras',function(req, res, next) {
     var mS = ""
     mS += "select "
-    mS += "detalles.cantidad,detalles.precio,detalles.fecha,detalles.id,"
-    mS += "repuestos.nombre "
+    mS += "detalles.cantidad,detalles.precio,detalles.fecha,detalles.id as iddetalle,"
+    mS += "detalles.cantidad * detalles.precio as monto,"
+    mS += "repuestos.nombre,repuestos.codigo "
     mS += "from detalles "
     mS += "join repuestos on repuestos.id=detalles.idarticulo "
     mS += "join carrito on carrito.id=detalles.idcarrito "
@@ -159,7 +160,7 @@ router.get('/precompras',function(req, res, next) {
                     res.status(200).render('precompras',{
                         xinflogin: minflogin,
                         xinfcarrito: minfcarrito,
-                        xprecompra: results
+                        xprecompra: JSON.stringify( results )
                     })
                 })
             })

@@ -1,8 +1,9 @@
 <div class="container">
 	<h1>Pre-Compra</h1>
 
-	<div class="row">
-		<div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 media">
+	<div class="row" id="pre-compra">
+		<!--
+		<div id="columna-" class="col-xs-12 col-sm-12 col-md-4 col-lg-4 media">
 	  		<p id="precompra-nombre" class="media-heading">Nombre del Repuesto con todo</p>		
 		    <div class="media-left">
 		      <img src="/images/repuestos/3006.jpg" class="media-object" style="width:210px">
@@ -10,11 +11,44 @@
 		    <div class="media-body">
 		      	<p id="precompra-cant">Cantidad</p>
 		      	<p id="precompra-precio">Precio</p>
-		      	<p id="precompra-subt">Sub-total</p>
-	  		    <button type="button" class="btn btn-danger btn-xs">Eliminar</button>
+		      	<p id="precompra-subt">Monto</p>
+	  		    <button type="button" class="btn btn-danger btn-xs" onclick="eliminarItem(id)">
+	  		    Eliminar</button>
 		    </div>
 	  	</div>
+	  	-->
 	</div>
 
-
 </div>
+
+<script>
+	$(function(){
+		cargarPrecompra()
+    })
+	function eliminarItem(mId){
+	}
+	function cargarPrecompra(){
+		var mImagen = ''
+		var mEle = ''
+    	var mLista = {{{xprecompra}}}
+      	$.each(mLista, function(index, element) { 
+      		mImagen = element.codigo + ".jpg"
+  			mEle = ''
+  			mEle += '<div id="columna-" class="col-xs-12 col-sm-12 col-md-4 col-lg-4 media">'
+  			mEle += '<p id="precompra-nombre" class="media-heading">'+element.nombre+'</p>'
+  			mEle += '<div class="media-left">'
+  			mEle += '<img src="/images/repuestos/' + mImagen + '" '
+  			mEle += 'class="media-object" style="width:160px" alt="'+mImagen+'">'
+  			mEle += '</div>'
+  			mEle += '<div class="media-body">'
+  			mEle += '<p id="precompra-cant">Cant:' + element.cantidad + '</p>'
+  			mEle += '<p id="precompra-precio">Precio:' + formatN(element.precio) + '</p>'
+  			mEle += '<p id="precompra-subt">Monto:' + formatN(element.monto)  + '</p>'
+  			mEle += '<button type="button" class="btn btn-danger btn-xs" '
+  			mEle += 'onclick="eliminarItem('+element.iddetalle+')">Eliminar</button>'
+			mEle += '</div></div>'
+
+			$("#pre-compra").append(mEle)
+  		})
+	}
+</script>
