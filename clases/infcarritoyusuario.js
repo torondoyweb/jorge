@@ -23,6 +23,7 @@ function inflogincerrado(mReq,callback){
     }
 	var minfcarrito = {
 		items: 0,
+	    total: 0,
 		nombre: "Repuestos"
 	}
     minflogin = JSON.stringify( minflogin )
@@ -94,7 +95,9 @@ function cantItems(mReq,callback){ // Retorna informacion de los Items del carri
 			if ( usuario.id == 0 ){
 				return callback( {items: 0, nombre: "Repuestos"} )
 			} else {
-				mS += "select sum(cantidad) as items from detalles "
+				mS += "select sum(detalles.cantidad) as items,"
+				mS += "sum(detalles.cantidad*precio) as total "
+				mS +="from detalles "
 				mS += "inner join carrito on detalles.idcarrito=carrito.id "
 				mS += "where carrito.estatus='Abierto' and carrito.idusuario=" + usuario.id
 				var conn = mysql.createConnection( xbase.db )
@@ -102,19 +105,20 @@ function cantItems(mReq,callback){ // Retorna informacion de los Items del carri
     			conn.query(mS,function (error, results, fields) {
     				if ( !error ) {
 	    				if ( results[0].items == null){
-	    					return callback( {items: 0, nombre: "Repuestos"} )
+	    					return callback( {items: 0, nombre: "Repuestos",total:0} )
 						} else {
-	    					return callback( {items: results[0].items, nombre: "Repuestos"})
+	    					return callback( {items: results[0].items, nombre: "Repuestos",
+	    							total: results[0].total })
 	    				}
 	    			} else {
-						return callback( {items: 0, nombre: "Repuestos"} )
+						return callback( {items: 0, nombre: "Repuestos",total:0} )
     				}
 				})
 				conn.end()
 			}
 		})
 	} else {
-		return callback( {items: 0, nombre: "Repuestos"} )
+		return callback( {items: 0, nombre: "Repuestos",total:0} )
 	}	
 }
 

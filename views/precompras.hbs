@@ -1,54 +1,95 @@
+<style>
+	.well-sm{
+		background: white;
+	}
+
+</style>
 <div class="container">
-	<h1>Pre-Compra</h1>
-
 	<div class="row" id="pre-compra">
-		<!--
-		<div id="columna-" class="col-xs-12 col-sm-12 col-md-4 col-lg-4 media">
-	  		<p id="precompra-nombre" class="media-heading">Nombre del Repuesto con todo</p>		
-		    <div class="media-left">
-		      <img src="/images/repuestos/3006.jpg" class="media-object" style="width:210px">
-		    </div>
-		    <div class="media-body">
-		      	<p id="precompra-cant">Cantidad</p>
-		      	<p id="precompra-precio">Precio</p>
-		      	<p id="precompra-subt">Monto</p>
-	  		    <button type="button" class="btn btn-danger btn-xs" onclick="eliminarItem(id)">
-	  		    Eliminar</button>
-		    </div>
-	  	</div>
-	  	-->
 	</div>
-
+	<div class="pull-left">
+			<p>Total Compras</p>
+			<p>Fecha inicio Compra</p>
+			<p>Dias de Carrito</p>
+			<p>Dirección de Envio</p>
+			<button type="button" class="btn btn-primary">Procesar Compras</button>
+			<br>
+			<br>
+	</div>
 </div>
-
 <script>
 	$(function(){
-		cargarPrecompra()
+		cargarPrecompra( {{{xprecompra}}},"no saltar la linea 0" )
+		var mCarrito = {{{xinfcarrito}}}
+		$("#tototalcompra").text(formatN(mCarrito.total))
+		$("#tototalcompra2").text(formatN(mCarrito.total))
     })
-	function eliminarItem(mId){
-	}
-	function cargarPrecompra(){
+	function cargarPrecompra(mLista,mPrimeraLinea){
 		var mImagen = ''
 		var mEle = ''
-    	var mLista = {{{xprecompra}}}
+    	//var mLista = {{{xprecompra}}}
       	$.each(mLista, function(index, element) { 
-      		mImagen = element.codigo + ".jpg"
-  			mEle = ''
-  			mEle += '<div id="columna-" class="col-xs-12 col-sm-12 col-md-4 col-lg-4 media">'
-  			mEle += '<p id="precompra-nombre" class="media-heading">'+element.nombre+'</p>'
-  			mEle += '<div class="media-left">'
-  			mEle += '<img src="/images/repuestos/' + mImagen + '" '
-  			mEle += 'class="media-object" style="width:160px" alt="'+mImagen+'">'
-  			mEle += '</div>'
-  			mEle += '<div class="media-body">'
-  			mEle += '<p id="precompra-cant">Cant:' + element.cantidad + '</p>'
-  			mEle += '<p id="precompra-precio">Precio:' + formatN(element.precio) + '</p>'
-  			mEle += '<p id="precompra-subt">Monto:' + formatN(element.monto)  + '</p>'
-  			mEle += '<button type="button" class="btn btn-danger btn-xs" '
-  			mEle += 'onclick="eliminarItem('+element.iddetalle+')">Eliminar</button>'
-			mEle += '</div></div>'
-
-			$("#pre-compra").append(mEle)
+      		// en la fila 0 vienen otros campos pero solo cuando se llama con ajax
+      		if ( index == 0 && mPrimeraLinea == "saltar primera linea") { 
+ 			} else {
+	      		mImagen = element.codigo + ".jpg"
+	  			mEle = ''
+	  			mEle += '<div id="columna-' + element.iddetalle + '" '
+	  			mEle += 'class="col-xs-12 col-sm-12 col-md-4 col-lg-4 media well well-sm">'
+	  			mEle += '<p id="precompra-nombre" class="media-heading">'+element.nombre+'</p>'
+	  			mEle += '<div class="media-left">'
+	  			mEle += '<img src="/images/repuestos/' + mImagen + '" '
+	  			mEle += 'class="media-object" style="width:160px" alt="'+mImagen+'">'
+	  			mEle += '</div>'
+	  			mEle += '<div class="media-body">'
+	  			mEle += '<p id="precompra-cant">Cant:' + element.cantidad + '</p>'
+	  			mEle += '<p id="precompra-precio">Precio:' + formatN(element.precio) + '</p>'
+	  			mEle += '<p id="precompra-subt">Monto:' + formatN(element.monto)  + '</p>'
+	  			mEle += '<button type="button" class="btn btn-danger btn-sm" '
+	  			mEle += 'onclick="eliminarItem('+element.iddetalle+')" '
+	  			mEle += 'id="boton-' + element.iddetalle + '" >'
+	  			mEle += '<i class="fa fa-trash facar" id="fa-'+element.iddetalle+'"></i>'
+	  			mEle += '<span style="padding:5px;" id="span-'+ element.iddetalle +'">Eliminar</>'
+	  			mEle += '</button>'
+				mEle += '</div></div>'
+				$("#pre-compra").append(mEle)
+			}
   		})
 	}
+	function eliminarItem(mId){
+		bootbox.confirm({size:"small",message:"Seguro de Eliminar este Item",buttons:{confirm:{label:'Si',className:'btn-success'},cancel:{label:'No',className:'btn-danger'}},
+		    callback: function (result) {
+		        if (result){
+        			$("#fa-"+mId).removeClass('fa-trash').addClass('fa-spinner fa-spin')
+					$("#boton-"+mId).attr("disabled", true)
+					$("#span-"+mId).text('Eliminando')
+					var mEnviar = { xiddetalle:mId }
+					$.post("/precompraeliminaritem",mEnviar, function(data){
+						$("#fa-"+mId).removeClass('fa-spinner fa-spin').addClass('fa-trash')
+						$("#boton-"+mId).attr("disabled", false)
+						$("#span-"+mId).text('Eliminar')
+						if ( typeof(data) == "string" ) {
+							if ( data == "error" ) {
+								bootbox.alert({
+	    							message: "Vuela a Intentar",
+	    							size: 'small'
+								})
+						 	}
+							if (data == "sin sesion" ){
+				                $("#msgboxtitulo").text("")
+				                $("#msgboxcuerpo").text("Inicie una Sesión")
+				                $("#msgbox").modal()
+						 	} 
+						}
+						if ( typeof(data) == "object" ) {
+			 				$("#infCarrito").text(data[0].items + ", " + data[0].nombre + " "+formatN(data[0].total))
+							$("#pre-compra").empty()
+							cargarPrecompra( data,"saltar primera linea" )
+						}
+					})					
+		        }
+		    }
+		})
+	}
+
 </script>

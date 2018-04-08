@@ -12,7 +12,7 @@ var users = require('./routes/users');
 var administracion = require('./routes/administracion')
 var mensajeria = require('./routes/mensajeria')
 var catalogo = require('./routes/catalogo')
-
+var precompra = require('./routes/precompra')
 
 var app = express();
 
@@ -41,6 +41,8 @@ app.use('/', users)
 app.use('/', administracion)
 app.use('/', mensajeria)
 app.use('/', catalogo)
+app.use('/', precompra)
+
 // Esto significa que el cursor o midherwhise busca las solicitudes dentro de index.js,users.js y carrito.js
 // si no existe en ningin de los 2 archivos pasa a capturar el error
 

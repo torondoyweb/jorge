@@ -8,7 +8,7 @@ var AES = require("crypto-js/aes")
 router.get('/', function(req, res, next) {
     infcarritoyusuario.inflogin(req,function( minflogin,minfcarrito ){
         res.status(200).render('index',{ xinflogin:minflogin, xinfcarrito:minfcarrito  })
-        //res.status(200).render('catalogo',{ xinflogin:minflogin, xinfcarrito:minfcarrito  })
+        //res.status(200).render('ejemplosdeconfirmacion')
     })
    
     //res.status(200).render('catalogo',{ layout: false })

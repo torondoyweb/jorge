@@ -77,7 +77,7 @@
 	 			$("#id_del_item").text(0)
 				$("#fa-"+mId).removeClass('fa-spinner fa-spin').addClass('fa-cart-plus')
 				$("#boton-"+mId).attr("disabled", false)
- 				$("#infCarrito").text(data.items + ", " + data.nombre)
+ 				$("#infCarrito").text(data.items+", "+data.nombre+" "+formatN(data.total))
 			}
 		})
 	}	
